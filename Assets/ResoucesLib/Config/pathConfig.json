@@ -1,0 +1,32 @@
+{
+  "infoList": [
+    {
+      "key": "ImgBtnLabPath",
+      "path": "LanSrc/BtnLabels"
+    },
+    {
+      "key": "ImgBtnSpritePath",
+      "path": "Images/BtnSrc"
+    },
+    {
+      "key": "MainMenu",
+      "path": "UIPanel/MainMenuPanel"
+    },
+    {
+      "key": "Shop",
+      "path": "UIPanel/ShopPanel"
+    },
+    {
+      "key": "Skill",
+      "path": "UIPanel/SkillPanel"
+    },
+    {
+      "key": "System",
+      "path": "UIPanel/SystemPanel"
+    },
+    {
+      "key": "Task",
+      "path": "UIPanel/TaskPanel"
+    }
+  ]
+}
