@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CellInfo:ICell
 {
-    public CellInfo(int id) {
+    public CellInfo(int id = 10001) {
         _templateId = id;
     }
     /**模板id**/

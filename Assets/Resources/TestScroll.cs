@@ -6,35 +6,45 @@ using UnityEngine.UI;
 
 public class TestScroll : MonoBehaviour
 {
-
+    private GameObject _prefab;
     // Use this for initialization
     void Start()
     {
         AssetManager.LoadAsset(PathManager.GetResPathByName("Prefabs", "CellView.prefab", "UILib"), new UnityAction<Object, string>(AssetCallBack));
-        GameObject srcollView = GameObject.Find("MScrollView");
-        MScrollViewFormat format = srcollView.GetComponent<MScrollViewFormat>();
-        RectTransform sForm = srcollView.GetComponent<RectTransform>();
-
-        GameObject container = srcollView.transform.Find("Container").gameObject;
-        RectTransform tForm = container.transform.GetComponent<RectTransform>();
-
-        tForm.sizeDelta = new Vector2(tForm.sizeDelta.x,600);
-        GridLayoutGroup layout = container.GetComponent<GridLayoutGroup>();
+        
+        
     }
 
     private void AssetCallBack(Object target, string path)
     {
-        Transform tForm = transform.Find("MScrollView").Find("Container");
+        //Transform tForm = transform.Find("MScrollView").Find("Container");
+        List<CellInfo> list = new List<CellInfo>();
         for (int i = 0; i < 20; i++)
         {
-            GameObject cell = Instantiate(target, tForm) as GameObject;
-            CellView cellView = cell.GetComponent<CellView>();
-            if (null != cellView)
-            {
-                cellView.info = new CellInfo(10001 + i);
-            }
+           CellInfo info = new CellInfo(10001 + i);
+            list.Add(info);
+            
+        }
+        _prefab = target as GameObject;
+        GameObject scrollView = transform.Find("MScrollView").gameObject;
+        scrollView.GetComponent<MScrollViewFormat>().SetCellFunc(list,InitItemFunc, UpdateItemFunc);
+    }
+
+    private void InitItemFunc(Transform transform,CellInfo info)
+    {
+        GameObject cell = Instantiate(_prefab, transform) as GameObject;
+        CellView cellView = cell.GetComponent<CellView>();
+        if (null != cellView)
+        {
+            cellView.info = info;
         }
     }
+
+    private void UpdateItemFunc(CellInfo info)
+    {
+
+    }
+
 
     // Update is called once per frame
     void Update()

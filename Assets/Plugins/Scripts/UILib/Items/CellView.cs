@@ -5,15 +5,16 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class CellView : MonoBehaviour {
-    private CellInfo _info;
+    private ICell _info;
     private Image _imgIcon;
 
 	// Use this for initialization
-	void Awake () {
+	protected virtual void Awake () {
         _imgIcon = gameObject.GetComponent<Image>();
 	}
 
-    public CellInfo info{
+    public ICell info
+    {
         get { return _info; }
         set
         {
@@ -41,9 +42,8 @@ public class CellView : MonoBehaviour {
         _imgIcon.sprite = target as Sprite;
     }
 
-    public void destroy()
+    public virtual void OnDestroy()
     {
-        Destroy(this);
         _info = null;
     }
 }
