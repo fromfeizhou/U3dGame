@@ -18,7 +18,7 @@ public class MImgBtnFormat : MBaseBtnFormat
     //返回按钮 文本资源地址(resourcesLib目录下)
     public string GetBtnLabResPath()
     {
-        string path = System.IO.Path.Combine(PathManager.GetResLibPath("ImgBtnLabPath"), imgLabName + ".png");
+        string path = System.IO.Path.Combine(PathManager.GetResPath("ImgBtnLab"), imgLabName + ".png");
         return path;
     }
 

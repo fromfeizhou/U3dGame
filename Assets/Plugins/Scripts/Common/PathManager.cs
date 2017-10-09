@@ -23,19 +23,31 @@ public class PathManager
     public static string configPath = "Assets/ResoucesLib/Config";
     public static string resoucePath = "Assets/ResoucesLib";
     //获取resourceLib下的目录
-    public static string GetResLibPath(string key)
+    public static string GetResPath(string key = "ImgShopItem", string rootKey = "")
     {
         string path = "";
+        string root = PathManager.resoucePath;
         if (pathDic == null)
         {
             ParsePath();
         }
-         if (pathDic.ContainsKey(key))
-        {
-            path = System.IO.Path.Combine(PathManager.resoucePath, pathDic[key]);
-        }
-        return path;
+        if (pathDic.ContainsKey(rootKey))
+         {
+             root = pathDic[rootKey];
+         }
 
+        if (pathDic.ContainsKey(key))
+        {
+            path = System.IO.Path.Combine(root, pathDic[key]);
+        }
+         
+        return path;
+    }
+
+    public static string GetResPathByName(string key = "ImgShopItem", string name = "10001.png", string rootKey = "")
+    {
+        string dic = GetResPath(key, rootKey);
+        return CombinePath(dic, name);
     }
 
     //解析path配置
@@ -67,17 +79,22 @@ public class PathManager
     //获取地址配置文件 地址
     public static string GetPathConfigPath()
     {
-        return System.IO.Path.Combine(PathManager.configPath, "pathConfig.json");
+        return CombinePath(PathManager.configPath, "pathConfig.json");
     }
 
     //获取语音包配置文件 地址
     public static string GetLocalStringPath()
     {
-        return System.IO.Path.Combine(PathManager.configPath, "localString.txt");
+        return CombinePath(PathManager.configPath, "localString.txt");
     }
 
+
+    public static string CombinePath(string root, string name)
+    {
+        return System.IO.Path.Combine(root, name);
+    }
     //销毁
-    public static void Destory()
+    public static void Destroy()
     {
         pathDic = null;
     }

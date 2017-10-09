@@ -1,25 +1,28 @@
 {
   "infoList": [
     {
-      "key": "ImgBtnLabPath",
-      "path": "LanSrc/BtnLabels"
+      "key": "UILib",
+      "path": "Assets/UILib"
+    },
+	{
+      "key": "Prefabs",
+      "path": "Prefabs"
+    },
+
+	{
+      "key": "ImgBtnLab",
+      "path": "LanSrc/Images/BtnLabels"
     },
     {
-      "key": "ImgBtnSpritePath",
+      "key": "ImgBtnSprite",
       "path": "Images/BtnSrc"
     },
     {
-      "key": "MainMenu",
-      "path": "UIPanel/MainMenuPanel"
+      "key": "ImgShopItem",
+      "path": "Images/ShopItems"
     },
-    {
-      "key": "Shop",
-      "path": "UIPanel/ShopPanel"
-    },
-    {
-      "key": "Skill",
-      "path": "UIPanel/SkillPanel"
-    },
+    
+    
     {
       "key": "System",
       "path": "UIPanel/SystemPanel"

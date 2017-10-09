@@ -63,7 +63,7 @@ public class LocalString
     /**
      * @brief 清空本地化文字记录
      */
-    public static void Destory()
+    public static void Destroy()
     {
         localWord = null;
     }

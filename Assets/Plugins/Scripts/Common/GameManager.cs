@@ -28,8 +28,8 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void Destory()
+    void Destroy()
     {
-        LocalString.Destory();
+        LocalString.Destroy();
     }
 }
