@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using UnityEngine.Events;
 
 
 public class MImgBtnFormat : MBaseBtnFormat
@@ -12,7 +10,7 @@ public class MImgBtnFormat : MBaseBtnFormat
     public override void Start()
     {
         base.Start();
-        AssetManager.LoadAsset(GetBtnLabResPath(), new UnityAction<Object, string>(ImgLabCallBack));
+        AssetManager.LoadAsset(GetBtnLabResPath(), ImgLabCallBack);
 
     }
     //返回按钮 文本资源地址(resourcesLib目录下)

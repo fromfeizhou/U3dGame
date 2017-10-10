@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.Events;
 [System.Serializable]
 public class JsonPathMode
 {
@@ -58,7 +56,7 @@ public class PathManager
         //列表初始化
         pathDic = new Dictionary<string, string>();
         //资源加载
-        AssetManager.LoadAsset(GetPathConfigPath(), new UnityAction<Object, string>(AssetLoadCallBack));
+        AssetManager.LoadAsset(GetPathConfigPath(), AssetLoadCallBack);
     }
 
     //pathJson加载回调

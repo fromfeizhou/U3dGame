@@ -1,7 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using UnityEngine.Events;
 using DG.Tweening;
 using UnityEngine.EventSystems;
 public enum MButtonState
@@ -32,8 +30,8 @@ public class MBaseBtnFormat : MonoBehaviour,IPointerDownHandler,IPointerUpHandle
     public virtual void Start()
     {
         //_comSp = GetComponent<Image>().sprite;
-        AssetManager.LoadAsset(GetBtnComResPath(), new UnityAction<Object, string>(ComCallBack), typeof(Sprite));
-        AssetManager.LoadAsset(GetBtnSelResPath(), new UnityAction<Object, string>(SelCallBack), typeof(Sprite));
+        AssetManager.LoadAsset(GetBtnComResPath(), ComCallBack, typeof(Sprite));
+        AssetManager.LoadAsset(GetBtnSelResPath(), SelCallBack, typeof(Sprite));
     }
 
     //设置按钮选中状态

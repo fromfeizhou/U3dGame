@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Events;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class CellView : MonoBehaviour {
@@ -33,7 +30,7 @@ public class CellView : MonoBehaviour {
         }
         else
         {
-           AssetManager.LoadAsset(_info.iconPath, new UnityAction<Object, string>(IconCallBack), typeof(Sprite));
+           AssetManager.LoadAsset(_info.iconPath, IconCallBack, typeof(Sprite));
         }
     }
     //资源加载回调

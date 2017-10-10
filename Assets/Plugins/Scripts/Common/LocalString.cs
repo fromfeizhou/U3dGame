@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class LocalString
 {
@@ -15,7 +14,7 @@ public class LocalString
         //初始化 列表
         localWord = new Dictionary<string, string>();
         //加载资源
-        AssetManager.LoadAsset(PathManager.GetLocalStringPath(), new UnityAction<Object, string>(AssetLoadCallBack));
+        AssetManager.LoadAsset(PathManager.GetLocalStringPath(),AssetLoadCallBack);
     }
 
     //localstring加载回调
