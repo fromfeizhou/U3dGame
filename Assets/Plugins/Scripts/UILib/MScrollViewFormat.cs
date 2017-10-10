@@ -75,7 +75,6 @@ public class MScrollViewFormat : MonoBehaviour
 
     private void AddItem()
     {
-      
         if (_initIndex >= _infoList.Count)
         {
             _initFunc(_container,null);
