@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class TestScroll : MonoBehaviour
@@ -18,7 +16,7 @@ public class TestScroll : MonoBehaviour
     {
         //Transform tForm = transform.Find("MScrollView").Find("Container");
         list = new List<ICell>();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 19; i++)
         {
            CellInfo info = new CellInfo(10001 + i);
             list.Add(info);
@@ -27,13 +25,10 @@ public class TestScroll : MonoBehaviour
         _prefab = target as GameObject;
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().SetCellFunc(list,InitItemFunc, UpdateItemFunc);
-
-        Invoke("testAddItem", 3f);
     }
 
     private void testAddItem()
     {
-        //list.RemoveRange(8, 11);
         for (int i = 0; i < 10; i++)
         {
             CellInfo info = new CellInfo(10001 + i);

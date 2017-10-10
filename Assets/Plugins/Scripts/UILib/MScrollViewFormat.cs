@@ -11,7 +11,9 @@ public class MScrollViewFormat : MonoBehaviour
     private int _row;       //行数
     private int _column;    //列数
     private GridLayoutGroup.Axis _startAxis;     //排列顺序（通常与滚动方向相反）
+    private ScrollRect _scrollRect; //滚动控制器
     private Transform _container;   //滚动容器
+    private GridLayoutGroup _layoutGroup;   //布局对象 
     private List<GameObject> _itemList; //对象池
     private List<ICell> _infoList;   //数据池
 
@@ -19,13 +21,16 @@ public class MScrollViewFormat : MonoBehaviour
     private InitFuncAction _initFunc;
     private UnityAction<GameObject, ICell> _updateFunc;
     private bool _canInit = false;
+    private bool test = true;
     void Start()
     {
+        _scrollRect = gameObject.GetComponent<ScrollRect>();
         _container = transform.Find("Container");
-
 
         //计算容器大小
         CalculateRC();
+        //监听滚动事件
+        _scrollRect.onValueChanged.AddListener(new UnityAction<Vector2>(ONScrollEvent));
     }
 
     // Update is called once per frame
@@ -39,7 +44,7 @@ public class MScrollViewFormat : MonoBehaviour
     //设置数据列表 构建函数 更新函数
     public void SetCellFunc(List<ICell> infoList = null, InitFuncAction initFunc = null, UnityAction<GameObject, ICell> updateFunc = null)
     {
-        clearItem();
+        ClearItem();
         _itemList = new List<GameObject>();
         _initFunc = initFunc;
         _updateFunc = updateFunc;
@@ -90,7 +95,6 @@ public class MScrollViewFormat : MonoBehaviour
     {
         for (int i = 0; i < itemCount; i++)
         {
-            Debug.Log("RemoveItem " + _itemList.Count);
             GameObject cell = _itemList[_itemList.Count - 1];
             _itemList.RemoveAt(_itemList.Count - 1);
             Destroy(cell);
@@ -103,21 +107,21 @@ public class MScrollViewFormat : MonoBehaviour
     private void CalculateRC()
     {
         RectTransform sForm = gameObject.GetComponent<RectTransform>();
-        GridLayoutGroup layout = _container.gameObject.GetComponent<GridLayoutGroup>();
-        _startAxis = layout.startAxis;
+        _layoutGroup = _container.gameObject.GetComponent<GridLayoutGroup>();
+        _startAxis = _layoutGroup.startAxis;
 
-        float height = sForm.sizeDelta.y - layout.padding.top - layout.padding.bottom;
-        if (height > layout.cellSize.y)
+        float height = sForm.sizeDelta.y - _layoutGroup.padding.top - _layoutGroup.padding.bottom;
+        if (height > _layoutGroup.cellSize.y)
         {
-            height += layout.spacing.y;
+            height += _layoutGroup.spacing.y;
         }
-        _row = (int)Mathf.Ceil(height * 1.0f / (layout.cellSize.y + layout.spacing.y));
-        float width = sForm.sizeDelta.x - layout.padding.left - layout.padding.right;
-        if (width > layout.cellSize.x)
+        _row = (int)Mathf.Ceil(height * 1.0f / (_layoutGroup.cellSize.y + _layoutGroup.spacing.y));
+        float width = sForm.sizeDelta.x - _layoutGroup.padding.left - _layoutGroup.padding.right;
+        if (width > _layoutGroup.cellSize.x)
         {
-            width += layout.spacing.x;
+            width += _layoutGroup.spacing.x;
         }
-        _column = (int)Mathf.Ceil(width * 1.0f / (layout.cellSize.x + layout.spacing.x));
+        _column = (int)Mathf.Ceil(width * 1.0f / (_layoutGroup.cellSize.x + _layoutGroup.spacing.x));
         if (_startAxis == GridLayoutGroup.Axis.Horizontal)
         {
             //水平方向铺排（放置满一行 换行）
@@ -148,8 +152,7 @@ public class MScrollViewFormat : MonoBehaviour
                     //实际位置需要数据队列下标+1
                     int row = (int)Mathf.Ceil((_initIndex) * 1.0f / _column);
                     RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
-                    GridLayoutGroup layout = _container.gameObject.GetComponent<GridLayoutGroup>();
-                    float height = layout.padding.top + layout.padding.bottom + row * layout.cellSize.y + (row - 1) * layout.spacing.y;
+                    float height = _layoutGroup.padding.top + _layoutGroup.padding.bottom + row * _layoutGroup.cellSize.y + (row - 1) * _layoutGroup.spacing.y;
 
                     RectTransform sForm = gameObject.GetComponent<RectTransform>();
                     height = height > sForm.sizeDelta.y ? height : sForm.sizeDelta.y;
@@ -164,8 +167,7 @@ public class MScrollViewFormat : MonoBehaviour
                     //实际位置需要数据队列下标+1
                     int column = (int)Mathf.Ceil((_initIndex) * 1.0f / _row);
                     RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
-                    GridLayoutGroup layout = _container.gameObject.GetComponent<GridLayoutGroup>();
-                    float width = layout.padding.left + layout.padding.right + column * layout.cellSize.x + (column - 1) * layout.spacing.x;
+                    float width = _layoutGroup.padding.left + _layoutGroup.padding.right + column * _layoutGroup.cellSize.x + (column - 1) * _layoutGroup.spacing.x;
 
                     RectTransform sForm = gameObject.GetComponent<RectTransform>();
                     width = width > sForm.sizeDelta.x ? width : sForm.sizeDelta.x;
@@ -175,12 +177,33 @@ public class MScrollViewFormat : MonoBehaviour
         }
     }
 
-    protected virtual void OnDestroy()
+    //滚动监听
+    private void ONScrollEvent(Vector2 pos)
     {
-        clearItem();
+        //Debug.Log("V:\t" + _scrollRect.verticalNormalizedPosition + "\tH:\t" + _scrollRect.horizontalNormalizedPosition);
+        if (_startAxis == GridLayoutGroup.Axis.Horizontal)
+        {
+            //水平排列 垂直滚动
+            if (test && _scrollRect.verticalNormalizedPosition < 0)
+            {
+                test = false;
+                for (int i = 0; i < _container.childCount; i++)
+                {
+                }
+            }
+        }
+        else
+        {
+            //垂直排列 水平滚动
+        }
     }
 
-    private void clearItem()
+    protected virtual void OnDestroy()
+    {
+        ClearItem();
+    }
+
+    private void ClearItem()
     {
         if (null != _itemList)
         {
