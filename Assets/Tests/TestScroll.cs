@@ -11,8 +11,6 @@ public class TestScroll : MonoBehaviour
     void Start()
     {
         AssetManager.LoadAsset(PathManager.GetResPathByName("Prefabs", "CellView.prefab", "UILib"), new UnityAction<Object, string>(AssetCallBack));
-        
-        
     }
 
     private void AssetCallBack(Object target, string path)
@@ -40,9 +38,13 @@ public class TestScroll : MonoBehaviour
         }
     }
 
-    private void UpdateItemFunc(CellInfo info)
+    private void UpdateItemFunc(GameObject cell,CellInfo info)
     {
-
+        CellView cellView = cell.GetComponent<CellView>();
+        if (null != cellView)
+        {
+            cellView.info = info;
+        }
     }
 
 
