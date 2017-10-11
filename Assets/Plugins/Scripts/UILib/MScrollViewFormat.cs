@@ -237,28 +237,28 @@ public class MScrollViewFormat : MonoBehaviour
             float max = -(_layoutGroup.padding.left + _layoutGroup.cellSize.x);
             float min = -_layoutGroup.padding.left;
 
-            if (tForm.anchoredPosition.x < max)
+            if (_scrollIndex < _scrollMax && tForm.anchoredPosition.x < max)
             {
                 tForm.anchoredPosition = new Vector2(min, tForm.anchoredPosition.y);
+                _scrollRect.ResetDragState();
+                for (int i = 0; i < _row; i++)
+                {
+                    _container.GetChild(0).SetSiblingIndex(_maxIndex - 1);
+                }
+                //滚动队列
+                _scrollIndex++;
+            }
+            else if (_scrollIndex > 0 && tForm.anchoredPosition.x > min)
+            {
+                tForm.anchoredPosition = new Vector2(max, tForm.anchoredPosition.y);
                 _scrollRect.ResetDragState();
                 for (int i = 0; i < _row; i++)
                 {
                     _container.GetChild(_maxIndex - 1).SetSiblingIndex(0);
                 }
                 //滚动队列
-                _scrollIndex++;
+                _scrollIndex--;
             }
-            //else if (_scrollIndex > 0 && tForm.anchoredPosition.x < min)
-            //{
-            //    tForm.anchoredPosition = new Vector2(max, tForm.anchoredPosition.y);
-            //    _scrollRect.ResetDragState();
-            //    for (int i = 0; i < _row; i++)
-            //    {
-            //        _container.GetChild(0).SetSiblingIndex(_maxIndex - 1);
-            //    }
-            //    //滚动队列
-            //    _scrollIndex--;
-            //}
         }
     }
 
