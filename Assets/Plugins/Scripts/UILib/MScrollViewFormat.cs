@@ -11,7 +11,7 @@ public class MScrollViewFormat : MonoBehaviour
     private int _row;       //行数
     private int _column;    //列数
     private GridLayoutGroup.Axis _startAxis;     //排列顺序（通常与滚动方向相反）
-    private ScrollRect _scrollRect; //滚动控制器
+    private MScrollRect _scrollRect; //滚动控制器
     private Transform _container;   //滚动容器
     private GridLayoutGroup _layoutGroup;   //布局对象 
     private List<GameObject> _itemList; //对象池
@@ -21,10 +21,9 @@ public class MScrollViewFormat : MonoBehaviour
     private InitFuncAction _initFunc;
     private UnityAction<GameObject, ICell> _updateFunc;
     private bool _canInit = false;
-    private bool test = true;
     void Start()
     {
-        _scrollRect = gameObject.GetComponent<ScrollRect>();
+        _scrollRect = gameObject.GetComponent<MScrollRect>();
         _container = transform.Find("Container");
 
         //计算容器大小
@@ -110,13 +109,13 @@ public class MScrollViewFormat : MonoBehaviour
         _layoutGroup = _container.gameObject.GetComponent<GridLayoutGroup>();
         _startAxis = _layoutGroup.startAxis;
 
-        float height = sForm.sizeDelta.y - _layoutGroup.padding.top - _layoutGroup.padding.bottom;
+        float height = sForm.sizeDelta.y;
         if (height > _layoutGroup.cellSize.y)
         {
             height += _layoutGroup.spacing.y;
         }
         _row = (int)Mathf.Ceil(height * 1.0f / (_layoutGroup.cellSize.y + _layoutGroup.spacing.y));
-        float width = sForm.sizeDelta.x - _layoutGroup.padding.left - _layoutGroup.padding.right;
+        float width = sForm.sizeDelta.x;
         if (width > _layoutGroup.cellSize.x)
         {
             width += _layoutGroup.spacing.x;
@@ -180,16 +179,20 @@ public class MScrollViewFormat : MonoBehaviour
     //滚动监听
     private void ONScrollEvent(Vector2 pos)
     {
+       
         //Debug.Log("V:\t" + _scrollRect.verticalNormalizedPosition + "\tH:\t" + _scrollRect.horizontalNormalizedPosition);
         if (_startAxis == GridLayoutGroup.Axis.Horizontal)
         {
+            RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
             //水平排列 垂直滚动
-            if (test && _scrollRect.verticalNormalizedPosition < 0)
+            Debug.Log(tForm.anchoredPosition.y);
+            if (tForm.anchoredPosition.y > _layoutGroup.padding.top + _layoutGroup.cellSize.y)
             {
-                test = false;
-                for (int i = 0; i < _container.childCount; i++)
-                {
-                }
+                tForm.anchoredPosition = new Vector2(tForm.anchoredPosition.x, 0);
+                _scrollRect.ResetDragState();
+                _container.GetChild(2).SetSiblingIndex(11);
+                _container.GetChild(1).SetSiblingIndex(10);
+                _container.GetChild(0).SetSiblingIndex(9);
             }
         }
         else
