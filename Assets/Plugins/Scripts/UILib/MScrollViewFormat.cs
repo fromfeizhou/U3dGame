@@ -205,7 +205,7 @@ public class MScrollViewFormat : MonoBehaviour
         {
             //水平排列 垂直滚动
             RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
-            float max = _layoutGroup.padding.top + _layoutGroup.cellSize.y;
+            float max = _layoutGroup.padding.top + _layoutGroup.cellSize.y + _layoutGroup.spacing.y;
             float min = _layoutGroup.padding.top;
             if (_scrollIndex < _scrollMax && tForm.anchoredPosition.y > max)
             {
@@ -234,9 +234,8 @@ public class MScrollViewFormat : MonoBehaviour
         {
             //垂直排列 水平滚动
             RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
-            float max = -(_layoutGroup.padding.left + _layoutGroup.cellSize.x);
-            float min = -_layoutGroup.padding.left;
-
+            float max = -(_layoutGroup.padding.left + _layoutGroup.cellSize.x + _layoutGroup.spacing.x);//左边
+            float min = -(_layoutGroup.padding.left) ;//右边
             if (_scrollIndex < _scrollMax && tForm.anchoredPosition.x < max)
             {
                 tForm.anchoredPosition = new Vector2(min, tForm.anchoredPosition.y);
