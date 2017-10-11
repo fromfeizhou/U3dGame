@@ -25,6 +25,9 @@ public class TestScroll : MonoBehaviour
         _prefab = target as GameObject;
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().SetCellFunc(list,InitItemFunc, UpdateItemFunc);
+
+        GameObject scrollViewII = transform.Find("MScrollViewII").gameObject;
+        scrollViewII.GetComponent<MScrollViewFormat>().SetCellFunc(list, InitItemFunc, UpdateItemFunc);
     }
 
     private void testAddItem()

@@ -16,6 +16,8 @@ public class MScrollViewFormat : MonoBehaviour
     private GridLayoutGroup _layoutGroup;   //布局对象 
     private List<GameObject> _itemList; //对象池
     private List<ICell> _infoList;   //数据池
+    private int _scrollIndex; //滚动队列下标
+    private int _scrollMax;    //滚动队列最大值
 
     public delegate GameObject InitFuncAction(Transform transform, ICell info);
     private InitFuncAction _initFunc;
@@ -29,7 +31,7 @@ public class MScrollViewFormat : MonoBehaviour
         //计算容器大小
         CalculateRC();
         //监听滚动事件
-        _scrollRect.onValueChanged.AddListener(new UnityAction<Vector2>(ONScrollEvent));
+        _scrollRect.onValueChanged.AddListener(new UnityAction<Vector2>(OnScrollEvent));
     }
 
     // Update is called once per frame
@@ -48,13 +50,17 @@ public class MScrollViewFormat : MonoBehaviour
         _initFunc = initFunc;
         _updateFunc = updateFunc;
         _infoList = infoList;
+        UpdateScrollMax();
+
         _initIndex = 0;
+        _scrollIndex = 0;
         _canInit = true;
     }
 
     //更新数据列表
     public void UpdateInfoList()
     {
+        UpdateScrollMax();
         //列表元素增加
         if (_initIndex < _maxIndex && _initIndex < _infoList.Count)
         {
@@ -63,11 +69,12 @@ public class MScrollViewFormat : MonoBehaviour
         }
         //列表元素减少
         int maxNum = _row;
-        int itemNum = _itemList.Count;
-        if (_startAxis == GridLayoutGroup.Axis.Horizontal)
+        if (IsHorizontal())
         {
             maxNum = _column;
         }
+        int itemNum = _itemList.Count;
+
         //减少超过一行 容器变动
         if (_infoList.Count < itemNum && (itemNum - _infoList.Count) >= maxNum)
         {
@@ -121,7 +128,7 @@ public class MScrollViewFormat : MonoBehaviour
             width += _layoutGroup.spacing.x;
         }
         _column = (int)Mathf.Ceil(width * 1.0f / (_layoutGroup.cellSize.x + _layoutGroup.spacing.x));
-        if (_startAxis == GridLayoutGroup.Axis.Horizontal)
+        if (IsHorizontal())
         {
             //水平方向铺排（放置满一行 换行）
             _row++;
@@ -134,6 +141,19 @@ public class MScrollViewFormat : MonoBehaviour
         _maxIndex = _row * _column;
     }
 
+    //更新滚动队列
+    private void UpdateScrollMax()
+    {
+        if (IsHorizontal())
+        {
+            _scrollMax = Mathf.CeilToInt(1.0f * (_infoList.Count - _maxIndex) / _column);
+        }
+        else
+        {
+            _scrollMax = Mathf.CeilToInt(1.0f * (_infoList.Count - _maxIndex) / _row);
+        }
+    }
+
     //更新滚动容器size
     private void UpdateContainerSize(bool isConst = false)
     {
@@ -143,7 +163,7 @@ public class MScrollViewFormat : MonoBehaviour
         }
         else
         {
-            if (_startAxis == GridLayoutGroup.Axis.Horizontal)
+            if (IsHorizontal())
             {
                 //每行起始位 计算变动
                 if (isConst || _initIndex % _column == 1)
@@ -177,28 +197,74 @@ public class MScrollViewFormat : MonoBehaviour
     }
 
     //滚动监听
-    private void ONScrollEvent(Vector2 pos)
+    private void OnScrollEvent(Vector2 pos)
     {
-       
+
         //Debug.Log("V:\t" + _scrollRect.verticalNormalizedPosition + "\tH:\t" + _scrollRect.horizontalNormalizedPosition);
-        if (_startAxis == GridLayoutGroup.Axis.Horizontal)
+        if (IsHorizontal())
         {
-            RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
             //水平排列 垂直滚动
-            Debug.Log(tForm.anchoredPosition.y);
-            if (tForm.anchoredPosition.y > _layoutGroup.padding.top + _layoutGroup.cellSize.y)
+            RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
+            float max = _layoutGroup.padding.top + _layoutGroup.cellSize.y;
+            float min = _layoutGroup.padding.top;
+            if (_scrollIndex < _scrollMax && tForm.anchoredPosition.y > max)
             {
-                tForm.anchoredPosition = new Vector2(tForm.anchoredPosition.x, 0);
+                tForm.anchoredPosition = new Vector2(tForm.anchoredPosition.x, min);
                 _scrollRect.ResetDragState();
-                _container.GetChild(2).SetSiblingIndex(11);
-                _container.GetChild(1).SetSiblingIndex(10);
-                _container.GetChild(0).SetSiblingIndex(9);
+                for (int i = 0; i < _column; i++)
+                {
+                    _container.GetChild(0).SetSiblingIndex(_maxIndex - 1);
+                }
+                //滚动队列
+                _scrollIndex++;
+            }
+            else if (_scrollIndex > 0 && tForm.anchoredPosition.y < min)
+            {
+                tForm.anchoredPosition = new Vector2(tForm.anchoredPosition.x, max);
+                _scrollRect.ResetDragState();
+                for (int i = 0; i < _column; i++)
+                {
+                    _container.GetChild(_maxIndex - 1).SetSiblingIndex(0);
+                }
+                //滚动队列
+                _scrollIndex--;
             }
         }
         else
         {
             //垂直排列 水平滚动
+            RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
+            float max = -(_layoutGroup.padding.left + _layoutGroup.cellSize.x);
+            float min = -_layoutGroup.padding.left;
+
+            if (tForm.anchoredPosition.x < max)
+            {
+                tForm.anchoredPosition = new Vector2(min, tForm.anchoredPosition.y);
+                _scrollRect.ResetDragState();
+                for (int i = 0; i < _row; i++)
+                {
+                    _container.GetChild(_maxIndex - 1).SetSiblingIndex(0);
+                }
+                //滚动队列
+                _scrollIndex++;
+            }
+            //else if (_scrollIndex > 0 && tForm.anchoredPosition.x < min)
+            //{
+            //    tForm.anchoredPosition = new Vector2(max, tForm.anchoredPosition.y);
+            //    _scrollRect.ResetDragState();
+            //    for (int i = 0; i < _row; i++)
+            //    {
+            //        _container.GetChild(0).SetSiblingIndex(_maxIndex - 1);
+            //    }
+            //    //滚动队列
+            //    _scrollIndex--;
+            //}
         }
+    }
+
+    private bool IsHorizontal()
+    {
+        return _startAxis == GridLayoutGroup.Axis.Horizontal;
     }
 
     protected virtual void OnDestroy()
