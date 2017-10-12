@@ -27,9 +27,11 @@ public class CellView : MonoBehaviour {
         if (null == _info)
         {
             _imgIcon.sprite = null;
+            gameObject.SetActive(false);
         }
         else
         {
+            gameObject.SetActive(true);
            AssetManager.LoadAsset(_info.iconPath, IconCallBack, typeof(Sprite));
         }
     }

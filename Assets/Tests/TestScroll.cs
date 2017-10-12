@@ -53,9 +53,9 @@ public class TestScroll : MonoBehaviour
         Invoke("testAddItem", 3f);
     }
 
-    private GameObject InitItemFunc(Transform transform, ICell info)
+    private GameObject InitItemFunc(ICell info)
     {
-        GameObject cell = Instantiate(_prefab, transform) as GameObject;
+        GameObject cell = Instantiate(_prefab) as GameObject;
         CellView cellView = cell.GetComponent<CellView>();
         if (null != cellView)
         {
