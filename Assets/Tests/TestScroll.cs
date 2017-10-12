@@ -16,7 +16,7 @@ public class TestScroll : MonoBehaviour
     {
         //Transform tForm = transform.Find("MScrollView").Find("Container");
         list = new List<ICell>();
-        for (int i = 0; i < 19; i++)
+        for (int i = 0; i < 12; i++)
         {
            CellInfo info = new CellInfo(10001 + i);
             list.Add(info);
@@ -28,16 +28,18 @@ public class TestScroll : MonoBehaviour
 
         GameObject scrollViewII = transform.Find("MScrollViewII").gameObject;
         scrollViewII.GetComponent<MScrollViewFormat>().SetCellFunc(list, InitItemFunc, UpdateItemFunc);
+
+        Invoke("testAddItem", 3f);
     }
 
     private void testAddItem()
     {
         for (int i = 0; i < 10; i++)
         {
-            CellInfo info = new CellInfo(10001 + i);
+            CellInfo info = new CellInfo(10004 + i);
             list.Add(info);
-
         }
+        Debug.Log("testAddItem" + list.Count);
 
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().UpdateInfoList();
@@ -47,7 +49,9 @@ public class TestScroll : MonoBehaviour
 
     private void testRemoveItem()
     {
-        list.RemoveRange(3, 10);
+        list.RemoveRange(12, 10);
+        Debug.Log("testRemoveItem" + list.Count);
+
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().UpdateInfoList();
         Invoke("testAddItem", 3f);

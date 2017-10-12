@@ -14,7 +14,7 @@ public class MScrollViewFormat : MonoBehaviour
     private MScrollRect _scrollRect; //滚动控制器
     private Transform _container;   //滚动容器
     private GridLayoutGroup _layoutGroup;   //布局对象 
-    private List<GameObject> _itemList; //对象池
+    private List<GameObject> _itemList; //对象池（访问长度 和销毁使用） 队列顺序与容器 cell的层次不一致（cell 层次会随更新变动
     private List<ICell> _infoList;   //数据池
     private int _scrollIndex; //滚动队列下标
     private int _scrollMax;    //滚动队列最大值
@@ -61,25 +61,16 @@ public class MScrollViewFormat : MonoBehaviour
     public void UpdateInfoList()
     {
         UpdateScrollMax();
+
         //列表元素增加
         if (_initIndex < _maxIndex && _initIndex < _infoList.Count)
         {
+            UpdateCellInfo();
             _canInit = true;
             return;
         }
-        //列表元素减少
-        int maxNum = _row;
-        if (IsAxisHorizontal())
-        {
-            maxNum = _column;
-        }
-        int itemNum = _itemList.Count;
-
-        //减少超过一行 容器变动
-        if (_infoList.Count < itemNum && (itemNum - _infoList.Count) >= maxNum)
-        {
-            RemoveItem(maxNum);
-        }
+       
+        UpdateCellInfo();
     }
 
     //初始化Item 超出数据列表不在创建
@@ -95,19 +86,6 @@ public class MScrollViewFormat : MonoBehaviour
         _itemList.Add(cell);
         _initIndex++;
         UpdateContainerSize();
-    }
-
-    //移除Item
-    private void RemoveItem(int itemCount)
-    {
-        for (int i = 0; i < itemCount; i++)
-        {
-            GameObject cell = _itemList[_itemList.Count - 1];
-            _itemList.RemoveAt(_itemList.Count - 1);
-            Destroy(cell);
-        }
-        _initIndex -= itemCount;
-        UpdateContainerSize(true);
     }
 
     //计算容器行列
@@ -129,7 +107,7 @@ public class MScrollViewFormat : MonoBehaviour
             height += _layoutGroup.spacing.y;
         }
         _row = (int)Mathf.Ceil(height * 1.0f / (_layoutGroup.cellSize.y + _layoutGroup.spacing.y));
-        
+
         float width = sForm.sizeDelta.x;
         //水平排列 垂直滚动 左右
         if (IsAxisHorizontal())
@@ -158,6 +136,11 @@ public class MScrollViewFormat : MonoBehaviour
     //更新滚动队列
     private void UpdateScrollMax()
     {
+        if (_infoList.Count < _maxIndex)
+        {
+            _scrollMax = 0;
+            return;
+        }
         if (IsAxisHorizontal())
         {
             _scrollMax = Mathf.CeilToInt(1.0f * (_infoList.Count - _maxIndex) / _column);
@@ -169,8 +152,9 @@ public class MScrollViewFormat : MonoBehaviour
     }
 
     //更新滚动容器size
-    private void UpdateContainerSize(bool isConst = false)
+    private void UpdateContainerSize(bool isConst = false, int activeNum = 0)
     {
+        int itemCount = isConst ? activeNum : _initIndex;
         if (_initIndex > _maxIndex)
         {
             return;
@@ -180,13 +164,12 @@ public class MScrollViewFormat : MonoBehaviour
             if (IsAxisHorizontal())
             {
                 //每行起始位 计算变动
-                if (isConst || _initIndex % _column == 1)
+                if (isConst || itemCount % _column == 1)
                 {
                     //实际位置需要数据队列下标+1
-                    int row = (int)Mathf.Ceil((_initIndex) * 1.0f / _column);
+                    int row = (int)Mathf.Ceil((itemCount) * 1.0f / _column);
                     RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
                     float height = _layoutGroup.padding.top + _layoutGroup.padding.bottom + row * _layoutGroup.cellSize.y + (row - 1) * _layoutGroup.spacing.y;
-
                     RectTransform sForm = gameObject.GetComponent<RectTransform>();
                     height = height > sForm.sizeDelta.y ? height : sForm.sizeDelta.y;
                     tForm.sizeDelta = new Vector2(tForm.sizeDelta.x, height);
@@ -195,10 +178,10 @@ public class MScrollViewFormat : MonoBehaviour
             else
             {
                 //每列起始位 计算变动
-                if (isConst || _initIndex % _row == 1)
+                if (isConst || itemCount % _row == 1)
                 {
                     //实际位置需要数据队列下标+1
-                    int column = (int)Mathf.Ceil((_initIndex) * 1.0f / _row);
+                    int column = (int)Mathf.Ceil((itemCount) * 1.0f / _row);
                     RectTransform tForm = _container.gameObject.GetComponent<RectTransform>();
                     float width = _layoutGroup.padding.left + _layoutGroup.padding.right + column * _layoutGroup.cellSize.x + (column - 1) * _layoutGroup.spacing.x;
 
@@ -233,7 +216,6 @@ public class MScrollViewFormat : MonoBehaviour
                 }
                 //滚动队列
                 _scrollIndex++;
-
             }
             else if (_scrollIndex > 0 && tForm.anchoredPosition.y < min)
             {
@@ -295,6 +277,67 @@ public class MScrollViewFormat : MonoBehaviour
         {
             _updateFunc(cell, null);
         }
+    }
+
+    private void UpdateCellInfo()
+    {
+        //计算当前显示数据 起始位
+        int gap = IsAxisHorizontal() ? _row : _column;
+        int dataIndex = _scrollIndex *gap;
+        Debug.Log(_scrollIndex + "  " + _scrollMax);
+        if (_scrollIndex > _scrollMax)
+        {
+            _scrollIndex = _scrollMax;
+            dataIndex = 0;
+        }
+
+        for (int i = 0; i < _container.childCount; i++,dataIndex++)
+        {
+            GameObject cell = _container.GetChild(i).gameObject;
+            if (dataIndex < _infoList.Count)
+            {
+                _updateFunc(_container.GetChild(i).gameObject, _infoList[dataIndex]);
+            }
+            else
+            {
+                _updateFunc(_container.GetChild(i).gameObject, null);
+            }
+        }
+
+        int activeNum = 0;
+        //非活动格子 放置最后
+        for (int i = _container.childCount - 1; i >= 0; i--)
+        {
+            GameObject cell = _container.GetChild(i).gameObject;
+            if (!cell.activeSelf)
+            {
+                cell.transform.SetSiblingIndex(_itemList.Count - 1);
+            }
+            else
+            {
+                activeNum++;
+            }
+        }
+
+        //调整滚动位置
+        UpdateContainerSize(true, activeNum);
+        //滚动位置超出现有元素
+        //if (_scrollIndex > _scrollMax)
+        //{
+        //    _scrollIndex = _scrollMax;
+        //    if (activeNum < _initIndex)
+        //    {
+        //        if (IsAxisHorizontal())
+        //        {
+        //            _scrollRect.verticalNormalizedPosition = 1;
+        //        }
+        //        else
+        //        {
+        //            _scrollRect.horizontalNormalizedPosition = 1;
+        //        }
+        //    }
+        //}
+        
     }
 
     //排列顺序
