@@ -14,7 +14,6 @@ public class MScrollViewFormat : MonoBehaviour
     private MScrollRect _scrollRect; //滚动控制器
     private Transform _container;   //滚动容器
     private GridLayoutGroup _layoutGroup;   //布局对象 
-    private List<GameObject> _itemList; //对象池（访问长度 和销毁使用） 队列顺序与容器 cell的层次不一致（cell 层次会随更新变动
     private List<ICell> _infoList;   //数据池
     private int _scrollIndex; //滚动队列下标
     private int _scrollMax;    //滚动队列最大值
@@ -46,7 +45,6 @@ public class MScrollViewFormat : MonoBehaviour
     public void SetCellFunc(List<ICell> infoList = null, InitFuncAction initFunc = null, UnityAction<GameObject, ICell> updateFunc = null)
     {
         ClearItem();
-        _itemList = new List<GameObject>();
         _initFunc = initFunc;
         _updateFunc = updateFunc;
         _infoList = infoList;
@@ -83,7 +81,6 @@ public class MScrollViewFormat : MonoBehaviour
         }
         GameObject cell = _initFunc(_infoList[_initIndex]);
         cell.transform.SetParent(_container);
-        _itemList.Add(cell);
         _initIndex++;
         UpdateContainerSize();
     }
@@ -152,9 +149,9 @@ public class MScrollViewFormat : MonoBehaviour
     }
 
     //更新滚动容器size
-    private void UpdateContainerSize(bool isConst = false, int activeNum = 0)
+    private void UpdateContainerSize(bool isConst = false)
     {
-        int itemCount = isConst ? activeNum : _initIndex;
+        int itemCount = _initIndex;
         if (IsAxisHorizontal())
         {
             //每行起始位 计算变动
@@ -167,7 +164,6 @@ public class MScrollViewFormat : MonoBehaviour
                 RectTransform sForm = gameObject.GetComponent<RectTransform>();
                 height = height > sForm.sizeDelta.y ? height : sForm.sizeDelta.y;
 
-                float tHieght = tForm.sizeDelta.y;
                 tForm.sizeDelta = new Vector2(tForm.sizeDelta.x, height);
             }
         }
@@ -343,13 +339,13 @@ public class MScrollViewFormat : MonoBehaviour
 
     private void ClearItem()
     {
-        if (null != _itemList)
+        if (_container != null && _container.childCount > 0)
         {
-            foreach (GameObject tCell in _itemList)
+            for (int i = _container.childCount - 1; i >= 0; i--)
             {
-                Destroy(tCell);
+                GameObject cell = _container.GetChild(i).gameObject;
+                Destroy(cell);
             }
-            _itemList = null;
         }
         _infoList = null;
     }
