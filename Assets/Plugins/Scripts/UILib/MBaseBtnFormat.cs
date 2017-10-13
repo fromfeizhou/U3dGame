@@ -108,7 +108,7 @@ public class MBaseBtnFormat : MonoBehaviour,IPointerDownHandler,IPointerUpHandle
         sequence.Append(tScale2);
         sequence.Append(tScale3);
         sequence.Append(tScale4);
-        sequence.onComplete = delegate() { _isAction = false; };
+        sequence.OnComplete(delegate() { _isAction = false; });
     }
 
     // 当按钮点击回调
