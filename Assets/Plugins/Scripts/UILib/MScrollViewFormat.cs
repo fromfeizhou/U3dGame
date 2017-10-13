@@ -324,7 +324,7 @@ public class MScrollViewFormat : MonoBehaviour
             }
         }
         UpdateContainerSize(true);
-        if (_infoList.Count < _initIndex - dataGap)
+        if (_infoList.Count < _initIndex - 2 * dataGap)
         {
             if (IsAxisHorizontal())
             {

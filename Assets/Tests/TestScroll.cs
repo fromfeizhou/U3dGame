@@ -16,7 +16,7 @@ public class TestScroll : MonoBehaviour
     {
         //Transform tForm = transform.Find("MScrollView").Find("Container");
         list = new List<ICell>();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i <11; i++)
         {
            CellInfo info = new CellInfo(10001 + i);
             list.Add(info);
@@ -51,7 +51,7 @@ public class TestScroll : MonoBehaviour
 
     private void testRemoveItem()
     {
-        list.RemoveRange(3, 20);
+        list.RemoveRange(11, 20);
         Debug.Log("testRemoveItem" + list.Count);
 
         GameObject scrollView = transform.Find("MScrollView").gameObject;
