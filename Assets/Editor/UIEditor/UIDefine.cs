@@ -131,8 +131,14 @@ public class TextFormatDefine  {
     private static void initColorDic()
     {
         colorDic = new Dictionary<string, Color>();
-        colorDic.Add("C1", new Color(255, 236, 193));
+        colorDic.Add("C1", new Color(0, 0, 0));
+        colorDic.Add("C2", new Color(255, 255, 255));
+        colorDic.Add("C3", new Color(255, 0, 0));
         colorDic.Add("C4", new Color(0, 255, 0));
+        colorDic.Add("C5", new Color(0, 0, 255));
+
+        colorDic.Add("C6", new Color(255, 236, 193));
+        colorDic.Add("C7", new Color(0, 255, 0));
     }
 	
 }

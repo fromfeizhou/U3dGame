@@ -20,7 +20,7 @@ public class ItemView : CellView {
             if (null != _itemInfo && null != value && _itemInfo.templateId == value.templateId)
                 return;
             //父类数据更新
-            info = value;
+            info = value as ICell;
             _itemInfo = value;
             UpdateTextNumView();
         }

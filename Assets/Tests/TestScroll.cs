@@ -9,7 +9,7 @@ public class TestScroll : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        AssetManager.LoadAsset(PathManager.GetResPathByName("Prefabs", "CellView.prefab", "UILib"), AssetCallBack);
+        AssetManager.LoadAsset(PathManager.GetResPathByName("Prefabs", "ItemView.prefab", "UILib"), AssetCallBack);
     }
 
     private void AssetCallBack(Object target, string path)
@@ -36,7 +36,7 @@ public class TestScroll : MonoBehaviour
     {
         for (int i = 0; i < 20; i++)
         {
-            CellInfo info = new CellInfo(10001 + i);
+            ItemInfo info = new ItemInfo(10001 + i,i);
             list.Add(info);
         }
         Debug.Log("testAddItem" + list.Count);
@@ -65,20 +65,20 @@ public class TestScroll : MonoBehaviour
     private GameObject InitItemFunc(ICell info)
     {
         GameObject cell = Instantiate(_prefab) as GameObject;
-        CellView cellView = cell.GetComponent<CellView>();
+        ItemView cellView = cell.GetComponent<ItemView>();
         if (null != cellView)
         {
-            cellView.info = info;
+            cellView.itemInfo = info as ItemInfo;
         }
         return cell;
     }
 
     private void UpdateItemFunc(GameObject cell, ICell info)
     {
-        CellView cellView = cell.GetComponent<CellView>();
+        ItemView cellView = cell.GetComponent<ItemView>();
         if (null != cellView)
         {
-            cellView.info = info;
+            cellView.itemInfo = info as ItemInfo;
         }
     }
 
