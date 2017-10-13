@@ -18,6 +18,11 @@ public class ItemInfo : CellInfo
         _count = count;
     }
 
+    public string getCountStr()
+    {
+        return _count > 0 ? _count.ToString() : "";
+    }
+
     public override string iconPath
     {
         get { return PathManager.GetResPathByName("ImgShopItem", templateId + ".png"); }

@@ -29,7 +29,7 @@ public class TestScroll : MonoBehaviour
         GameObject scrollViewII = transform.Find("MScrollViewII").gameObject;
         scrollViewII.GetComponent<MScrollViewFormat>().SetCellFunc(list, InitItemFunc, UpdateItemFunc);
 
-        Invoke("testAddItem", 3f);
+        //Invoke("testAddItem", 3f);
     }
 
     private void testAddItem()
