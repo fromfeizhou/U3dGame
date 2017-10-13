@@ -67,7 +67,6 @@ public class MScrollViewFormat : MonoBehaviour
             _canInit = true;
             return;
         }
-       
         UpdateCellInfo();
     }
 
@@ -111,10 +110,10 @@ public class MScrollViewFormat : MonoBehaviour
             height = height - _layoutGroup.padding.top - _layoutGroup.padding.bottom;
             height = height > _layoutGroup.cellSize.y ? height : _layoutGroup.cellSize.y;
         }
-        
+
         _row = (int)Mathf.Ceil(height * 1.0f / (_layoutGroup.cellSize.y + _layoutGroup.spacing.y));
 
-        
+
         _column = (int)Mathf.Ceil(width * 1.0f / (_layoutGroup.cellSize.x + _layoutGroup.spacing.x));
 
         if (IsAxisHorizontal())
@@ -151,7 +150,7 @@ public class MScrollViewFormat : MonoBehaviour
     //更新滚动容器size
     private void UpdateContainerSize(bool isConst = false)
     {
-        int itemCount = _initIndex;
+        int itemCount = _initIndex < _infoList.Count ? _initIndex : _infoList.Count;
         if (IsAxisHorizontal())
         {
             //每行起始位 计算变动
@@ -309,9 +308,9 @@ public class MScrollViewFormat : MonoBehaviour
     {
         //计算当前显示数据 起始位
         int dataGap = IsAxisHorizontal() ? _column : _row;
-        
+
         int dataIndex = _scrollIndex * dataGap;
-       
+
         for (int i = 0; i < _container.childCount; i++)
         {
             if (dataIndex < _infoList.Count)
@@ -322,6 +321,18 @@ public class MScrollViewFormat : MonoBehaviour
             else
             {
                 _updateFunc(_container.GetChild(i).gameObject, null);
+            }
+        }
+        UpdateContainerSize(true);
+        if (_infoList.Count < _initIndex)
+        {
+            if (IsAxisHorizontal())
+            {
+                _scrollRect.verticalNormalizedPosition = 0;
+            }
+            else
+            {
+                _scrollRect.horizontalNormalizedPosition = 0;
             }
         }
     }
