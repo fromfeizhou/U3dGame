@@ -18,16 +18,13 @@ public class TestScroll : MonoBehaviour
         list = new List<ICell>();
         for (int i = 0; i <11; i++)
         {
-           CellInfo info = new CellInfo(10001 + i);
+           ItemInfo info = new ItemInfo(10001 + i,i+1);
             list.Add(info);
             
         }
         _prefab = target as GameObject;
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().SetCellFunc(list,InitItemFunc, UpdateItemFunc);
-
-        GameObject scrollViewII = transform.Find("MScrollViewII").gameObject;
-        scrollViewII.GetComponent<MScrollViewFormat>().SetCellFunc(list, InitItemFunc, UpdateItemFunc);
 
         //Invoke("testAddItem", 3f);
     }
@@ -43,10 +40,8 @@ public class TestScroll : MonoBehaviour
 
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().UpdateInfoList();
-
-        GameObject scrollViewII = transform.Find("MScrollViewII").gameObject;
-        scrollViewII.GetComponent<MScrollViewFormat>().UpdateInfoList();
-        Invoke("testRemoveItem", 3f);
+        
+        //Invoke("testRemoveItem", 3f);
     }
 
     private void testRemoveItem()
@@ -57,9 +52,7 @@ public class TestScroll : MonoBehaviour
         GameObject scrollView = transform.Find("MScrollView").gameObject;
         scrollView.GetComponent<MScrollViewFormat>().UpdateInfoList();
 
-        GameObject scrollViewII = transform.Find("MScrollViewII").gameObject;
-        scrollViewII.GetComponent<MScrollViewFormat>().UpdateInfoList();
-        Invoke("testAddItem", 3f);
+        //Invoke("testAddItem", 3f);
     }
 
     private GameObject InitItemFunc(ICell info)
