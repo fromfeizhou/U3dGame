@@ -16,7 +16,7 @@ public class TestScroll : MonoBehaviour
     {
         //Transform tForm = transform.Find("MScrollView").Find("Container");
         list = new List<ICell>();
-        for (int i = 0; i <11; i++)
+        for (int i = 0; i <9; i++)
         {
            ItemInfo info = new ItemInfo(10001 + i,i+1);
             list.Add(info);
