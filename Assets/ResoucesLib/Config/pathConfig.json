@@ -5,6 +5,10 @@
       "path": "Assets/UILib"
     },
 	{
+      "key": "FaceSpAsset",
+      "path": "Images/Face"
+    },
+	{
       "key": "Prefabs",
       "path": "Prefabs"
     },

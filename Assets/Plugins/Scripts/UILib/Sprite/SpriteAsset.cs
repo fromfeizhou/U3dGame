@@ -20,6 +20,10 @@ public class SpriteAsset : ScriptableObject
     /// 所有sprite信息 SpriteAssetInfor类为具体的信息类
     /// </summary>
     public List<SpriteInforGroup> listSpriteGroup;
+    //表情字符占位
+    public float width = 1.0f;
+    public float size = 24.0f;
+    public float tickTime = 0.1f;
 }
 
 [System.Serializable]
@@ -60,6 +64,22 @@ public class SpriteInforGroup
 {
     public string tag="";
     public List<SpriteInfor> listSpriteInfor=new List<SpriteInfor>();
-    public float width=1.0f;
-    public float size=24.0f;
+    
+    public int curIndex = 0;
+
+    public SpriteInfor curSprteInfo
+    {
+        get{
+            return listSpriteInfor[curIndex];
+        }
+    }
+
+    public void run()
+    {
+        curIndex++;
+        if (curIndex >= listSpriteInfor.Count)
+        {
+            curIndex = 0;
+        }
+    }
 }
