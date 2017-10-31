@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class GameDefine{
 
-	
+    
 }
 
-public enum GameStartState
+public struct GameLoadStepEvent
 {
-    LOAD_PATH,
-    LOAD_WORD
+    public static string LOAD_PATH = "GameLoadStepEvent_loadPath";
+    public static string LOAD_WORD = "GameLoadStepEventp_loadWord";
+    public static string LOAD_FACE_ASSET = "GameLoadStepEvent_loadFaceAsset";
 }

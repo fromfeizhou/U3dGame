@@ -9,10 +9,6 @@ public class SpriteAsset : ScriptableObject
     /// </summary>
     public int ID;
     /// <summary>
-    /// 静态表情
-    /// </summary>
-    public bool _IsStatic;
-    /// <summary>
     /// 图片资源
     /// </summary>
     public Texture texSource;

@@ -14,7 +14,7 @@ public class SpriteFaceCache
 {
     private static Dictionary<int,SpriteAsset> _spAssetDic = null;
 
-    public static void ParseFaceSpriteData()
+    public static void ParseAsset()
     {
         _spAssetDic = new Dictionary<int, SpriteAsset>();
         string path = System.IO.Path.Combine(PathManager.GetResPath("FaceSpAsset"), "emoji.asset");
@@ -23,6 +23,20 @@ public class SpriteFaceCache
 
     private static void loadAssetCom(Object target, string path)
     {
-        Debug.Log(target);
+        SpriteAsset spAsset = target as SpriteAsset;
+        if (null != spAsset)
+        {
+            _spAssetDic[spAsset.ID] = spAsset;
+        }
+        GameStartEvent.getInstance().dispatchEvent(GameLoadStepEvent.LOAD_FACE_ASSET);
+    }
+
+    public static SpriteAsset GetAsset(int index)
+    {
+        if (_spAssetDic.ContainsKey(index))
+        {
+            return _spAssetDic[index];
+        }
+        return null;
     }
 }

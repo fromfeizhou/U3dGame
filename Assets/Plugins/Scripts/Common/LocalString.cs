@@ -41,6 +41,8 @@ public class LocalString
                 }
             }
         }
+
+        GameStartEvent.getInstance().dispatchEvent(GameLoadStepEvent.LOAD_WORD);
     }
     
     /**

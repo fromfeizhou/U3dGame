@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameCenterEvent:NotificationDelegate {
+public class GameStartEvent : NotificationDelegate
+{
 
-    private static GameCenterEvent _instance = null;
+    private static GameStartEvent _instance = null;
 
     //Single 
-    public static GameCenterEvent getInstance()
+    public static GameStartEvent getInstance()
     {
         if (_instance == null)
         {
-            _instance = new GameCenterEvent();
+            _instance = new GameStartEvent();
             return _instance;
         }
         return _instance;

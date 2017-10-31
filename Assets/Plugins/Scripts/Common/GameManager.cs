@@ -1,37 +1,63 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
-    private GameStartState _state = GameStartState.LOAD_PATH;
+    private int _loadIndex = 0;
+    private List<string> _stateList;
+    private List<UnityAction> _loadFuncList;
     // Use this for initialization
     void Awak()
     {
-       
+        
     }
 
     void Start()
     {
         Debug.Log("GameManager Start");
+        _loadIndex = 0;
+
+        _stateList = new List<string>();
+        _loadFuncList = new List<UnityAction>();
+
+        //加载地址文件
+        _stateList.Add(GameLoadStepEvent.LOAD_PATH);
+        _loadFuncList.Add(PathManager.ParsePath);
+        //加载本地化文本
+        _stateList.Add(GameLoadStepEvent.LOAD_WORD);
+        _loadFuncList.Add(LocalString.ParseWord);
+
+        //加载表情资源
+        _stateList.Add(GameLoadStepEvent.LOAD_FACE_ASSET);
+        _loadFuncList.Add(SpriteFaceCache.ParseAsset);
+
+        LoadDataIndex();
     }
 
-    private void LoadDataIndex(GameStartState state)
+    private void LoadDataIndex()
     {
-        //地址解析
-        GameCenterEvent.getInstance().addEventListener(_state.ToString(), LoadDataCom);
-        PathManager.ParsePath();
+        Debug.Log("GameManager LoadDataIndex: " + _loadIndex);
+        GameStartEvent.getInstance().addEventListener(_stateList[_loadIndex].ToString(), LoadDataCom);
+        _loadFuncList[_loadIndex]();
     }
     private void LoadDataCom(Notification note)
     {
-        //文字本地化解析
-        GameCenterEvent.getInstance().addEventListener(GameStartState.LOAD_WORD.ToString(), LoadWordFlieCom);
-        LocalString.ParseWord();
-    }
+        GameStartEvent.getInstance().removeEventListener(_stateList[_loadIndex].ToString(), LoadDataCom);
+        _loadIndex++;
+        if (_loadIndex >= _stateList.Count)
+        {
+            GameStart();
+            return;
+        }
 
-    private void LoadWordFlieCom(Notification note)
+        LoadDataIndex();
+    }
+   
+    private void GameStart()
     {
-        GameCenterEvent.getInstance().removeEventListener(GameStartState.LOAD_WORD.ToString(), LoadWordFlieCom);
+        Debug.Log("GameManager GameStart");
     }
 
     // Update is called once per frame

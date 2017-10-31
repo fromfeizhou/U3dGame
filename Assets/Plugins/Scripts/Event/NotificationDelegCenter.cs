@@ -64,7 +64,7 @@ public class NotificationDelegate
     }
 
     //派发无数据
-    public void DispatchEvent(string type)
+    public void dispatchEvent(string type)
     {
         dispatchEvent(type, null);
     }

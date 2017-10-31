@@ -72,6 +72,8 @@ public class PathManager
         {
             pathDic.Add(info.key, info.path);
         }
+
+        GameStartEvent.getInstance().dispatchEvent(GameLoadStepEvent.LOAD_PATH);
     }
 
     //获取地址配置文件 地址

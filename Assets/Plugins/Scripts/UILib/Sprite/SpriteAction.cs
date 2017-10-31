@@ -7,20 +7,20 @@ using System.Collections.Generic;
 public class SpriteAction : MonoBehaviour
 {
 
-    public SpriteAsset usa;
     SpriteInforGroup _infoGroup;
     private float fTime = 0.0f;
-
+    private float tickTime = 1f;
     void Start()
     {
-        _infoGroup = usa.listSpriteGroup[0];
+        _infoGroup = SpriteFaceCache.GetAsset(0).listSpriteGroup[0];
+        tickTime = SpriteFaceCache.GetAsset(0).tickTime;
     }
     // Update is called once per frame
     void Update()
     {
         fTime += Time.deltaTime;
 
-        if (fTime >= usa.tickTime)
+        if (fTime >= tickTime)
         {
             GetComponent<Image>().sprite = _infoGroup.curSprteInfo.sprite;
             _infoGroup.run();
