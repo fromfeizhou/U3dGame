@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(Image))]
-public class SpriteAction : MonoBehaviour
+public class SpriteFaceAction : MonoBehaviour
 {
 
     SpriteInforGroup _infoGroup;
@@ -12,8 +12,8 @@ public class SpriteAction : MonoBehaviour
     private float tickTime = 1f;
     void Start()
     {
-        _infoGroup = SpriteFaceCache.GetAsset(0).listSpriteGroup[0];
-        tickTime = SpriteFaceCache.GetAsset(0).tickTime;
+        _infoGroup = SpriteFaceCache.GetAsset(1,"die");
+        tickTime = SpriteFaceCache.GetAsset(1).tickTime;
     }
     // Update is called once per frame
     void Update()

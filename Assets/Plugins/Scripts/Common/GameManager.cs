@@ -9,14 +9,9 @@ public class GameManager : MonoBehaviour
     private List<string> _stateList;
     private List<UnityAction> _loadFuncList;
     // Use this for initialization
-    void Awak()
+    void Awake()
     {
-        
-    }
-
-    void Start()
-    {
-        Debug.Log("GameManager Start");
+        Debug.Log("GameManager LoadStart");
         _loadIndex = 0;
 
         _stateList = new List<string>();
@@ -34,6 +29,11 @@ public class GameManager : MonoBehaviour
         _loadFuncList.Add(SpriteFaceCache.ParseAsset);
 
         LoadDataIndex();
+    }
+
+    void Start()
+    {
+        
     }
 
     private void LoadDataIndex()

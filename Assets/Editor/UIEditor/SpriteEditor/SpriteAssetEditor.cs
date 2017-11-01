@@ -46,10 +46,10 @@ public class SpriteAssetEditor : Editor
       //  EditorGUILayout.HelpBox("Number Of Tags:" + spriteAsset.listSpriteGroup.Count + "     Number Of Group:" + spriteAsset.listSpriteGroup.Count, MessageType.Info);
 
       //  GUILayout.BeginVertical("HelpBox");
-      //  GUILayout.BeginHorizontal();
-      //  spriteAsset.ID = EditorGUILayout.IntField("ID:", spriteAsset.ID);
-      ////  playSpeed = EditorGUILayout.FloatField("FrameSpeed", playSpeed);
-      //  GUILayout.EndHorizontal();
+        GUILayout.BeginHorizontal();
+        spriteAsset.ID = EditorGUILayout.IntField("ID:", spriteAsset.ID);
+        //  playSpeed = EditorGUILayout.FloatField("FrameSpeed", playSpeed);
+        GUILayout.EndHorizontal();
       //  GUILayout.BeginHorizontal();
       //  spriteAsset._IsStatic = EditorGUILayout.Toggle("Static:", spriteAsset._IsStatic);
       //  GUILayout.EndHorizontal();
