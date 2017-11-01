@@ -8,12 +8,15 @@ public class SpriteFaceAction : MonoBehaviour
 {
 
     SpriteInforGroup _infoGroup;
+    public int m_FaceIndex = 0;
+    public string m_FaceName = "play";
+
     private float fTime = 0.0f;
     private float tickTime = 1f;
     void Start()
     {
-        _infoGroup = SpriteFaceCache.GetAsset(1,"die");
-        tickTime = SpriteFaceCache.GetAsset(1).tickTime;
+        _infoGroup = SpriteFaceCache.GetAsset(m_FaceIndex, m_FaceName);
+        tickTime = SpriteFaceCache.GetAsset(m_FaceIndex).tickTime;
     }
     // Update is called once per frame
     void Update()
