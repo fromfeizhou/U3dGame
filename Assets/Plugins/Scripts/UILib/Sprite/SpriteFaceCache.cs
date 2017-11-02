@@ -44,7 +44,7 @@ public class SpriteFaceCache
 
     public static SpriteAsset GetAsset(int index)
     {
-        if (_spAssetDic.ContainsKey(index))
+            if (null != _spAssetDic && _spAssetDic.ContainsKey(index))
         {
             return _spAssetDic[index];
         }
@@ -53,7 +53,7 @@ public class SpriteFaceCache
 
     public static SpriteInforGroup GetAsset(int index, string name)
     {
-        if (_spAssetDic.ContainsKey(index))
+        if (null != _spAssetDic &&_spAssetDic.ContainsKey(index))
         {
             foreach (SpriteInforGroup spriteInforGroup in _spAssetDic[index].listSpriteGroup)
             {

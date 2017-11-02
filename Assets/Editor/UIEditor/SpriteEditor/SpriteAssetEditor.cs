@@ -17,24 +17,24 @@ public class SpriteAssetEditor : Editor
     //序列帧播放速度
     private float playSpeed;
     //添加标签
-    private bool addTag;
+    //private bool addTag;
     //添加的标签的名称
-    private string addTagName;
+    //private string addTagName;
 
     public void OnEnable()
     {
         spriteAsset = (SpriteAsset)target;
 
-        playSpeed = 6;
+        playSpeed = 0.6f;
 
         Init();
 
-   //     EditorApplication.update += RefreshFrameAnimation;
+        //EditorApplication.update += RefreshFrameAnimation;
     }
 
     public void OnDisable()
     {
-    //    EditorApplication.update -= RefreshFrameAnimation;
+        //EditorApplication.update -= RefreshFrameAnimation;
     }
     
     public override void OnInspectorGUI()
@@ -257,8 +257,8 @@ public class SpriteAssetEditor : Editor
         }
         playIndex = 0;
         showIndex = -1;
-        addTag = false;
-        addTagName = "";
+        //addTag = false;
+        //addTagName = "";
     }
 
     /// <summary>
@@ -325,36 +325,36 @@ public class SpriteAssetEditor : Editor
         }
     }
 
-    /// <summary>
-    /// 新增标签
-    /// </summary>
-    private void AddTagSure()
-    {
-        SpriteInforGroup sig = new SpriteInforGroup();
-        sig.tag = addTagName;
-        sig.listSpriteInfor = new List<SpriteInfor>();
+    ///// <summary>
+    ///// 新增标签
+    ///// </summary>
+    //private void AddTagSure()
+    //{
+    //    SpriteInforGroup sig = new SpriteInforGroup();
+    //    sig.tag = addTagName;
+    //    sig.listSpriteInfor = new List<SpriteInfor>();
 
-        spriteAsset.listSpriteGroup.Insert(0, sig);
+    //    spriteAsset.listSpriteGroup.Insert(0, sig);
 
-        Init();
+    //    Init();
 
-        EditorUtility.SetDirty(spriteAsset);
-    }
+    //    EditorUtility.SetDirty(spriteAsset);
+    //}
 
-    /// <summary>
-    /// 清理空的标签
-    /// </summary>
-    private void ClearTag()
-    {
-        for (int i = 0; i < spriteAsset.listSpriteGroup.Count; i++)
-        {
-            if (spriteAsset.listSpriteGroup[i].listSpriteInfor.Count <= 0)
-            {
-                spriteAsset.listSpriteGroup.RemoveAt(i);
-                i -= 1;
-            }
-        }
+    ///// <summary>
+    ///// 清理空的标签
+    ///// </summary>
+    //private void ClearTag()
+    //{
+    //    for (int i = 0; i < spriteAsset.listSpriteGroup.Count; i++)
+    //    {
+    //        if (spriteAsset.listSpriteGroup[i].listSpriteInfor.Count <= 0)
+    //        {
+    //            spriteAsset.listSpriteGroup.RemoveAt(i);
+    //            i -= 1;
+    //        }
+    //    }
 
-        Init();
-    }
+    //    Init();
+    //}
 }
