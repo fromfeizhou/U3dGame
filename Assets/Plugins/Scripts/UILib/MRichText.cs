@@ -32,7 +32,17 @@ public class MRichText : Text
     {
         base.SetVerticesDirty();
         _outputText = GetOutputText();
+        UpdateQuadImage();
+
     }
+
+    protected void UpdateQuadImage()
+    {
+
+
+
+    }
+
 
     #region 根据正则规则更新文本
     private string GetOutputText()
@@ -70,21 +80,27 @@ public class MRichText : Text
             //更新表情
             else
             {
-                //SpriteInforGroup _tempGroup = _InlineManager._IndexSpriteInfo[_tempID][_tempTag];
                 _textBuilder.Append(text.Substring(_textIndex, match.Index - _textIndex));
+
+                SpriteAsset spriteAsset = SpriteFaceCache.GetAsset(_tempID);
+                SpriteInforGroup tempGroup = SpriteFaceCache.GetAsset(_tempID, _tempTag);
+                float imgSize = spriteAsset == null ? 24.0f : spriteAsset.size;
+                float imgWidth = spriteAsset == null ? 1.0f : spriteAsset.width;
+
                 int vertexIndex = _textBuilder.Length * 4;
-                _textBuilder.Append(@"<quad size=" + 20 + " width=" + 1 + " />");
-                
+                _textBuilder.Append(@"<quad size=" + imgSize + " width=" + imgWidth + " />");
+
                 SpriteTagInfo _tempSpriteTag = new SpriteTagInfo
                 {
                     _ID = _tempID,
                     _Tag = _tempTag,
-                    //_Size = new Vector2(_tempGroup.size * _tempGroup.width, _tempGroup.size),
+                    //_Size = new Vector2(spriteAsset.size * spriteAsset.width, spriteAsset.size),
                     _Pos = new Vector3[4],
-                    //_UV = _tempGroup.listSpriteInfor[0].uv
+                    _UV = tempGroup == null? new Vector2[4] : tempGroup.listSpriteInfor[0].uv,
                 };
                 if (!_SpriteInfo.ContainsKey(vertexIndex))
                     _SpriteInfo.Add(vertexIndex, _tempSpriteTag);
+
             }
 
             _textIndex = match.Index + match.Length;
@@ -118,9 +134,9 @@ public class MRichText : Text
         int vertCount = verts.Count - 4;
         Vector2 roundingOffset = new Vector2(verts[0].position.x, verts[0].position.y) * unitsPerPixel;
         roundingOffset = PixelAdjustPoint(roundingOffset) - roundingOffset;
-       
+
         toFill.Clear();
-        
+
         ClearQuadUVs(verts);
 
 
