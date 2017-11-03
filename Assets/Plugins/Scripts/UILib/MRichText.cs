@@ -94,9 +94,9 @@ public class MRichText : Text
                 {
                     _ID = _tempID,
                     _Tag = _tempTag,
-                    //_Size = new Vector2(spriteAsset.size * spriteAsset.width, spriteAsset.size),
+                    _Size = new Vector2(imgSize * imgWidth, imgSize),
                     _Pos = new Vector3[4],
-                    _UV = tempGroup == null? new Vector2[4] : tempGroup.listSpriteInfor[0].uv,
+                    _UV = tempGroup == null ? new Vector2[4] : tempGroup.listSpriteInfor[0].uv,
                 };
                 if (!_SpriteInfo.ContainsKey(vertexIndex))
                     _SpriteInfo.Add(vertexIndex, _tempSpriteTag);
@@ -180,8 +180,32 @@ public class MRichText : Text
                 UIVertex tempVertex = verts[i];
                 tempVertex.uv0 = Vector2.zero;
                 verts[i] = tempVertex;
+
+                //绘制表情
+                //SpriteFaceAction face = new SpriteFaceAction();
+                //face.m_FaceIndex = item.Value._ID;
+                //face.m_FaceName = item.Value._Tag;
+                //RectTransform rt = face.GetComponent<RectTransform>();
+                //if (rt)
+                //{
+                //    rt.parent = this.transform;
+                //    rt.localPosition = verts[i].position;
+                //    rt.localRotation = Quaternion.identity;
+                //    rt.localScale = Vector3.one;
+                //    rt.sizeDelta = item.Value._Size;
+                //    //rt.anchoredPosition = new Vector2(verts[endIndex].x + size.x / 2, verts[endIndex].y + size.y / 2);
+                //}
             }
         }
+
+        //绘制表情
+        UpdateDrawnSprite();
+    }
+    #endregion
+
+    #region 绘制表情
+    void UpdateDrawnSprite()
+    {
     }
     #endregion
 }
