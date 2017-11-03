@@ -29,12 +29,12 @@ public class SpriteAssetEditor : Editor
 
         Init();
 
-   //     EditorApplication.update += RefreshFrameAnimation;
+        //EditorApplication.update += RefreshFrameAnimation;
     }
 
     public void OnDisable()
     {
-    //    EditorApplication.update -= RefreshFrameAnimation;
+        //EditorApplication.update -= RefreshFrameAnimation;
     }
     
     public override void OnInspectorGUI()
@@ -181,7 +181,8 @@ public class SpriteAssetEditor : Editor
 
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("ID:", GUILayout.Width(50));
-                    spriteAsset.listSpriteGroup[i].listSpriteInfor[j].ID = EditorGUILayout.IntField(spriteAsset.listSpriteGroup[i].listSpriteInfor[j].ID);
+                    //spriteAsset.listSpriteGroup[i].listSpriteInfor[j].ID = EditorGUILayout.IntField(spriteAsset.listSpriteGroup[i].listSpriteInfor[j].ID);
+                    EditorGUILayout.IntField(spriteAsset.listSpriteGroup[i].listSpriteInfor[j].ID);
                     GUILayout.EndHorizontal();
 
                     GUILayout.BeginHorizontal();
