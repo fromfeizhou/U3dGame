@@ -16,7 +16,7 @@ public class UiRoot : MonoBehaviour {
     private void onClick1()
     {
         Debug.Log("Button1 Clicked. ClickHandler.");
-        UIManager.getInstance().setup(this.transform.parent);
+        UIManager.getInstance().setup(this.transform);
     }
 
     private void onClick2()
@@ -27,6 +27,6 @@ public class UiRoot : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-		
+        
 	}
 }

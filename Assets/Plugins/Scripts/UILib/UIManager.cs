@@ -30,7 +30,7 @@ public class UIManager
         GameObject go = Object.Instantiate(obj) as GameObject;
         //go.transform.localPosition = new Vector3(512, 384, 0);
         go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
-        go.transform.SetParent(_uiRoot);
+        go.transform.SetParent(_uiRoot,false);
         
     }
 }
