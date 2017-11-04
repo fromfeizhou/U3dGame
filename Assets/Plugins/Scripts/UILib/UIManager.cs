@@ -39,7 +39,7 @@ public class UIManager
         go.transform.SetParent(_toolLayer, false);
     }
 
-        public void OpenUiPanelByName(string name)
+    public void OpenUiPanelByName(string name)
     {
         AssetManager.LoadAsset(PathManager.GetResPath(name), panelCallBack);
     }
@@ -50,6 +50,5 @@ public class UIManager
         GameObject go = Object.Instantiate(obj) as GameObject;
         go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
         go.transform.SetParent(_panelLayer,false);
-        
     }
 }
