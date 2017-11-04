@@ -6,31 +6,50 @@ public class UIManager
 {
     private static UIManager _instance;
 
-    private Transform _uiRoot;
+    private GameObject _uiRoot;
+    private Transform _toolLayer;
+    private Transform _panelLayer;
+    private Transform _tipLayer;
+    
 
-    public static UIManager getInstance()
+
+    public static UIManager GetInstance()
     {
         if (_instance == null) _instance = new UIManager();
         return _instance;
     }
 
-    public void setup(Transform root)
+    public void Setup(GameObject root)
     {
         _uiRoot = root;
+        _toolLayer =  GameObject.Find("ToolLayer").transform;
+        _panelLayer = GameObject.Find("PanelLayer").transform;
+        _tipLayer = GameObject.Find("TipLayer").transform;
     }
 
-    public void openUiById(int id)
+    public void InitMainToolView()
     {
-        AssetManager.LoadAsset(PathManager.GetResPath("Panel1"), callBack);
+        AssetManager.LoadAsset(PathManager.GetResPath("toolView"), toolLoadCallBack);
     }
 
-    private void callBack(Object obj,string path)
+    private void toolLoadCallBack(Object obj, string path)
+    {
+        GameObject go = Object.Instantiate(obj) as GameObject;
+        go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
+        go.transform.SetParent(_toolLayer, false);
+    }
+
+        public void OpenUiPanelByName(string name)
+    {
+        AssetManager.LoadAsset(PathManager.GetResPath(name), panelCallBack);
+    }
+
+    private void panelCallBack(Object obj,string path)
     {
         Debug.Log(path);
         GameObject go = Object.Instantiate(obj) as GameObject;
-        //go.transform.localPosition = new Vector3(512, 384, 0);
         go.GetComponent<RectTransform>().localPosition = new Vector3(0, 0, 0);
-        go.transform.SetParent(_uiRoot,false);
+        go.transform.SetParent(_panelLayer,false);
         
     }
 }

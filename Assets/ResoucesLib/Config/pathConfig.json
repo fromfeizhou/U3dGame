@@ -38,6 +38,10 @@
 	{
       "key": "Panel1",
       "path": "Panel.prefab"
+    },
+	{
+      "key": "toolView",
+      "path": "MainToolView.prefab"
     }
   ]
 }
