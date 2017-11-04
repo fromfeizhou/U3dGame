@@ -182,19 +182,19 @@ public class MRichText : Text
                 verts[i] = tempVertex;
 
                 //绘制表情
-                //SpriteFaceAction face = new SpriteFaceAction();
-                //face.m_FaceIndex = item.Value._ID;
-                //face.m_FaceName = item.Value._Tag;
-                //RectTransform rt = face.GetComponent<RectTransform>();
-                //if (rt)
-                //{
-                //    rt.parent = this.transform;
-                //    rt.localPosition = verts[i].position;
-                //    rt.localRotation = Quaternion.identity;
-                //    rt.localScale = Vector3.one;
-                //    rt.sizeDelta = item.Value._Size;
-                //    //rt.anchoredPosition = new Vector2(verts[endIndex].x + size.x / 2, verts[endIndex].y + size.y / 2);
-                //}
+                SpriteFaceAction face = new SpriteFaceAction();
+                face.m_FaceIndex = item.Value._ID;
+                face.m_FaceName = item.Value._Tag;
+                RectTransform rt = face.GetComponent<RectTransform>();
+                if (rt)
+                {
+                    rt.parent = this.transform;
+                    rt.localPosition = verts[i].position;
+                    rt.localRotation = Quaternion.identity;
+                    rt.localScale = Vector3.one;
+                    rt.sizeDelta = item.Value._Size;
+                    //rt.anchoredPosition = new Vector2(verts[endIndex].x + size.x / 2, verts[endIndex].y + size.y / 2);
+                }
             }
         }
 
