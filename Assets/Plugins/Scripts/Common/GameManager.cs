@@ -5,6 +5,8 @@ using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
+    public static bool gameInit = false;
+
     private int _loadIndex = 0;
     private List<string> _stateList;
     private List<UnityAction> _loadFuncList;
@@ -58,6 +60,7 @@ public class GameManager : MonoBehaviour
     private void GameStart()
     {
         Debug.Log("GameManager GameStart");
+        GameManager.gameInit = true;
     }
 
     // Update is called once per frame
@@ -66,8 +69,9 @@ public class GameManager : MonoBehaviour
 
     }
 
-    void Destroy()
+    void OnDestroy()
     {
         LocalString.Destroy();
+        GameManager.gameInit = false;
     }
 }
