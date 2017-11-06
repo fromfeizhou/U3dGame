@@ -22,9 +22,12 @@ public class UIManager
     public void Setup(GameObject root)
     {
         _uiRoot = root;
-        _toolLayer =  GameObject.Find("ToolLayer").transform;
-        _panelLayer = GameObject.Find("PanelLayer").transform;
-        _tipLayer = GameObject.Find("TipLayer").transform;
+        _toolLayer = _uiRoot.transform.Find("ToolLayer").transform;
+        _panelLayer = _uiRoot.transform.Find("PanelLayer").transform;
+        _tipLayer = _uiRoot.transform.Find("TipLayer").transform;
+        //_toolLayer =  GameObject.Find("ToolLayer").transform;
+        //_panelLayer = GameObject.Find("PanelLayer").transform;
+        //_tipLayer = GameObject.Find("TipLayer").transform;
     }
 
     public void InitMainToolView()
