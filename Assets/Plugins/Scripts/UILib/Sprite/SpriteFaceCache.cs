@@ -66,4 +66,9 @@ public class SpriteFaceCache
         }
         return null;
     }
+
+    public static void Destory()
+    {
+        _spAssetDic = null;
+    }
 }

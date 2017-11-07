@@ -30,4 +30,16 @@ public class SpriteFaceAction : MonoBehaviour
             fTime = 0.0f;
         }
     }
+
+    public void setIndexAction(int index,string action)
+    {
+        if (m_index == index && m_actoin == action)
+        {
+            return;
+        }
+        m_index = index;
+        m_actoin = action;
+        _infoGroup = SpriteFaceCache.GetAsset(m_index, m_actoin);
+        tickTime = SpriteFaceCache.GetAsset(m_index).tickTime;
+    }
 }

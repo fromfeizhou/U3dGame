@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("GameManager GameStart");
         GameManager.gameInit = true;
+        GameStartEvent.getInstance().dispatchEvent(GameLoadStepEvent.LOAD_COM);
     }
 
     // Update is called once per frame
@@ -72,6 +73,8 @@ public class GameManager : MonoBehaviour
     void OnDestroy()
     {
         LocalString.Destroy();
+        PathManager.Destroy();
+        SpriteFaceCache.Destory();
         GameManager.gameInit = false;
     }
 }

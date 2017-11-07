@@ -50,16 +50,23 @@ public class MRichText : Text
         string outputText = GetOutputText();
         if (_outputText == outputText)
             return;
-
         _outputText = outputText;
-    }
-
-    void Start()
-    {
+        
         if (GameManager.gameInit)
         {
             UpdateQuadImage();
         }
+        else
+        {
+            GameStartEvent.getInstance().addEventListener(GameLoadStepEvent.LOAD_COM, LoadDataCom);
+        }
+    }
+
+    private void LoadDataCom(Notification note)
+    {
+
+        GameStartEvent.getInstance().removeEventListener(GameLoadStepEvent.LOAD_COM, LoadDataCom);
+        UpdateQuadImage();
     }
 
     protected void UpdateQuadImage()
@@ -72,21 +79,37 @@ public class MRichText : Text
         for (int i = 0; i < _imagesTagInfoList.Count; i++)
         {
             SpriteTagInfo spInfo = _imagesTagInfoList[i];
-            GameObject go = Object.Instantiate(_prefabObj) as GameObject;
-            SpriteFaceAction face = go.GetComponent<SpriteFaceAction>();
-            face.m_index = spInfo.faceId;
-            face.m_actoin = spInfo.action;
-            var rt = go.GetComponent<RectTransform>();
-            if (rt)
-            {
-                rt.SetParent(_faceAction, false);
-                rt.localPosition = spInfo.pos;
-                rt.localRotation = Quaternion.identity;
-                rt.localScale = Vector3.one;
-                rt.sizeDelta = spInfo.size;
-            }
 
-            _imagesPool.Add(go);
+            if (i >= _imagesPool.Count)
+            {
+                GameObject go = Object.Instantiate(_prefabObj) as GameObject;
+                SpriteFaceAction face = go.GetComponent<SpriteFaceAction>();
+                face.setIndexAction(spInfo.faceId, spInfo.action);
+                var rt = go.GetComponent<RectTransform>();
+                if (rt)
+                {
+                    rt.SetParent(_faceAction, false);
+                    rt.localPosition = spInfo.pos;
+                    rt.localRotation = Quaternion.identity;
+                    rt.localScale = Vector3.one;
+                    rt.sizeDelta = spInfo.size;
+                }
+                _imagesPool.Add(go);
+            }
+            else
+            {
+                GameObject go = _imagesPool[i];
+                SpriteFaceAction face = go.GetComponent<SpriteFaceAction>();
+                face.setIndexAction(spInfo.faceId, spInfo.action);
+                go.SetActive(true);
+            }
+        }
+        for (var i = _imagesTagInfoList.Count; i < _imagesPool.Count; i++)
+        {
+            if (_imagesPool[i])
+            {
+                _imagesPool[i].SetActive(false);
+            }
         }
     }
 
@@ -225,6 +248,14 @@ public class MRichText : Text
                 tempVertex.uv0 = Vector2.zero;
                 verts[k] = tempVertex;
             }
+            if (i < _imagesPool.Count)
+            {
+                GameObject go = _imagesPool[i];
+                RectTransform rt = go.GetComponent<RectTransform>();
+                rt.anchoredPosition = new Vector2(verts[spInfo.vertId + 3].position.x + rt.sizeDelta.x / 2, verts[spInfo.vertId + 3].position.y + rt.sizeDelta.y / 2);
+
+            }
+           
         }
     }
     #endregion
