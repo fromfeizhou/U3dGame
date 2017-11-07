@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.EventSystems;
+using UnityEngine.Events;
 public enum MButtonState
 {
     NORMAL,
@@ -26,6 +27,11 @@ public class MBaseBtnFormat : MonoBehaviour,IPointerDownHandler,IPointerUpHandle
 
     public bool isSelectedBtn = false;
     private bool _selected = false;
+
+    [System.Serializable]
+    public class MButtonEvent : UnityEvent<string> { }
+    //点击事件监听
+    public MButtonEvent OnBtnClick = new MButtonEvent();
 
     public virtual void Start()
     {
@@ -114,7 +120,7 @@ public class MBaseBtnFormat : MonoBehaviour,IPointerDownHandler,IPointerUpHandle
     // 当按钮点击回调
     private void OnClick()
     {
-        Debug.Log("OnClick");
+        OnBtnClick.Invoke("Click Event");
         if (isSelectedBtn)
         {
             Selected = !Selected;
