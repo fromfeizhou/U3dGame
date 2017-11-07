@@ -5,23 +5,13 @@ using System.Text.RegularExpressions;
 using UnityEngine.UI;
 using System.Text;
 using UnityEditor;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 
-public class SpriteTagInfo
-{
-    //顶点
-    public int vertId;
-    //图集ID
-    public int faceId;
-    //标签标签
-    public string action;
-    //标签大小
-    public Vector2 size;
-    //表情位置
-    public Vector3 pos;
-}
 
-public class MRichText : Text
+
+public class MRichText : Text,IPointerClickHandler
 {
     /// <summary>
     /// 图片池
@@ -32,9 +22,16 @@ public class MRichText : Text
     /// 图片的最后一个顶点的索引
     /// </summary>
     private readonly List<SpriteTagInfo> _imagesTagInfoList = new List<SpriteTagInfo>();
+    #region 超链接
+    [System.Serializable]
+    public class HrefClickEvent : UnityEvent<string, int> { }
+    //点击事件监听
+    public HrefClickEvent OnHrefClick = new HrefClickEvent();
+    // 超链接信息列表  
+    private readonly List<HrefInfo> _listHrefInfos = new List<HrefInfo>();
+    #endregion
 
     private string _outputText = "";
-
     private Transform _faceAction = null;
     private Object _prefabObj = null;
 
@@ -60,8 +57,11 @@ public class MRichText : Text
         {
             GameStartEvent.getInstance().addEventListener(GameLoadStepEvent.LOAD_COM, LoadDataCom);
         }
+        //重新设置高度
+        rectTransform.sizeDelta = new Vector2(rectTransform.sizeDelta.x, preferredHeight);
     }
 
+    //资源初始化完毕 
     private void LoadDataCom(Notification note)
     {
 
@@ -138,14 +138,14 @@ public class MRichText : Text
                 int _endIndex = textBuilder.Length * 4 - 2;
                 textBuilder.Append("</color>");
 
-                //var hrefInfo = new HrefInfo
-                //{
-                //    id = Mathf.Abs(tempId),
-                //    startIndex = _startIndex, // 超链接里的文本起始顶点索引
-                //    endIndex = _endIndex,
-                //    name = match.Groups[2].Value
-                //};
-                //_ListHrefInfos.Add(hrefInfo);
+                var hrefInfo = new HrefInfo
+                {
+                    id = Mathf.Abs(tempId),
+                    startIndex = _startIndex, // 超链接里的文本起始顶点索引
+                    endIndex = _endIndex,
+                    name = match.Groups[2].Value
+                };
+                _listHrefInfos.Add(hrefInfo);
 
             }
             //更新表情
@@ -204,7 +204,7 @@ public class MRichText : Text
 
         ClearQuadUVs(verts);
 
-
+        List<Vector3> listVertsPos = new List<Vector3>();
         if (roundingOffset != Vector2.zero)
         {
             for (int i = 0; i < vertCount; ++i)
@@ -216,6 +216,7 @@ public class MRichText : Text
                 m_TempVerts[tempVertsIndex].position.y += roundingOffset.y;
                 if (tempVertsIndex == 3)
                     toFill.AddUIVertexQuad(m_TempVerts);
+                listVertsPos.Add(m_TempVerts[tempVertsIndex].position);
             }
         }
         else
@@ -227,11 +228,87 @@ public class MRichText : Text
                 m_TempVerts[tempVertsIndex].position *= unitsPerPixel;
                 if (tempVertsIndex == 3)
                     toFill.AddUIVertexQuad(m_TempVerts);
+                listVertsPos.Add(m_TempVerts[tempVertsIndex].position);
             }
         }
 
+        //计算包围盒
+        CalcBoundsInfo(listVertsPos, toFill, settings);
+
         m_DisableFontTextureRebuiltCallback = false;
     }
+
+    #region 处理超链接的包围盒
+    void CalcBoundsInfo(List<Vector3> listVertsPos, VertexHelper toFill, TextGenerationSettings settings)
+    {
+        #region 包围框
+        // 处理超链接包围框  
+        foreach (var hrefInfo in _listHrefInfos)
+        {
+            hrefInfo.boxes.Clear();
+            if (hrefInfo.startIndex >= listVertsPos.Count)
+            {
+                continue;
+            }
+
+            // 将超链接里面的文本顶点索引坐标加入到包围框  
+            var pos = listVertsPos[hrefInfo.startIndex];
+            var bounds = new Bounds(pos, Vector3.zero);
+            for (int i = hrefInfo.startIndex, m = hrefInfo.endIndex; i < m; i++)
+            {
+                if (i >= listVertsPos.Count)
+                {
+                    break;
+                }
+
+                pos = listVertsPos[i];
+                if (pos.x < bounds.min.x)
+                {
+                    // 换行重新添加包围框  
+                    hrefInfo.boxes.Add(new Rect(bounds.min, bounds.size));
+                    bounds = new Bounds(pos, Vector3.zero);
+                }
+                else
+                {
+                    bounds.Encapsulate(pos); // 扩展包围框  
+                }
+            }
+            //添加包围盒
+            hrefInfo.boxes.Add(new Rect(bounds.min, bounds.size));
+        }
+        #endregion
+
+        #region 添加下划线
+        //TextGenerator _UnderlineText = new TextGenerator();
+        //_UnderlineText.Populate("_", settings);
+        //IList<UIVertex> _TUT = _UnderlineText.verts;
+        //foreach (var item in _listHrefInfos)
+        //{
+        //    for (int i = 0; i < item.boxes.Count; i++)
+        //    {
+        //        //计算下划线的位置
+        //        Vector3[] _ulPos = new Vector3[4];
+        //        _ulPos[0] = item.boxes[i].position + new Vector2(0.0f, fontSize * 0.2f);
+        //        _ulPos[1] = _ulPos[0] + new Vector3(item.boxes[i].width, 0.0f);
+        //        _ulPos[2] = item.boxes[i].position + new Vector2(item.boxes[i].width, 0.0f);
+        //        _ulPos[3] = item.boxes[i].position;
+        //        //绘制下划线
+        //        for (int j = 0; j < 4; j++)
+        //        {
+        //            m_TempVerts[j] = _TUT[j];
+        //            m_TempVerts[j].color = Color.blue;
+        //            m_TempVerts[j].position = _ulPos[j];
+        //            if (j == 3)
+        //                toFill.AddUIVertexQuad(m_TempVerts);
+        //        }
+
+        //    }
+        //}
+
+        #endregion
+
+    }
+    #endregion
 
     #region 清除乱码
     private void ClearQuadUVs(IList<UIVertex> verts)
@@ -260,6 +337,8 @@ public class MRichText : Text
     }
     #endregion
 
+
+
     #region 文本所占的长宽
     public override float preferredWidth
     {
@@ -274,7 +353,6 @@ public class MRichText : Text
         get
         {
             var settings = GetGenerationSettings(new Vector2(rectTransform.rect.size.x, 0.0f));
-            Debug.Log(cachedTextGeneratorForLayout.GetPreferredHeight(_outputText, settings) / pixelsPerUnit);
             return cachedTextGeneratorForLayout.GetPreferredHeight(_outputText, settings) / pixelsPerUnit;
         }
     }
@@ -288,4 +366,59 @@ public class MRichText : Text
         }
         _imagesPool.Clear();
     }
+
+    #region  超链接信息类
+    private class HrefInfo
+    {
+        public int id;
+
+        public int startIndex;
+
+        public int endIndex;
+
+        public string name;
+
+        public readonly List<Rect> boxes = new List<Rect>();
+    }
+    #endregion
+
+    #region 点击事件检测是否点击到超链接文本
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        Vector2 lp;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rectTransform, eventData.position, eventData.pressEventCamera, out lp);
+
+        foreach (var hrefInfo in _listHrefInfos)
+        {
+            var boxes = hrefInfo.boxes;
+            for (var i = 0; i < boxes.Count; ++i)
+            {
+                if (boxes[i].Contains(lp))
+                {
+                    OnHrefClick.Invoke(hrefInfo.name, hrefInfo.id);
+                    return;
+                }
+            }
+        }
+    }
+    #endregion
+
+
+    #region  表情信息类
+    private class SpriteTagInfo
+    {
+        //顶点
+        public int vertId;
+        //图集ID
+        public int faceId;
+        //标签标签
+        public string action;
+        //标签大小
+        public Vector2 size;
+        //表情位置
+        public Vector3 pos;
+    }
+    #endregion
+
 }

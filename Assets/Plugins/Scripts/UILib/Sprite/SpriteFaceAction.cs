@@ -31,6 +31,7 @@ public class SpriteFaceAction : MonoBehaviour
         }
     }
 
+    //设置动画 动作
     public void setIndexAction(int index,string action)
     {
         if (m_index == index && m_actoin == action)
