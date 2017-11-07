@@ -73,7 +73,7 @@ public class MRichText : Text
     {
         if (_prefabObj == null)
         {
-            _faceAction = transform.Find("FaceAction");
+            _faceAction = transform.Find("FaceActionCon");
             _prefabObj = AssetDatabase.LoadMainAssetAtPath(PathManager.GetResPathByName("Prefabs", "FaceActoin.prefab", "UILib"));
         }
         for (int i = 0; i < _imagesTagInfoList.Count; i++)
@@ -256,6 +256,26 @@ public class MRichText : Text
 
             }
            
+        }
+    }
+    #endregion
+
+    #region 文本所占的长宽
+    public override float preferredWidth
+    {
+        get
+        {
+            var settings = GetGenerationSettings(Vector2.zero);
+            return cachedTextGeneratorForLayout.GetPreferredWidth(_outputText, settings) / pixelsPerUnit;
+        }
+    }
+    public override float preferredHeight
+    {
+        get
+        {
+            var settings = GetGenerationSettings(new Vector2(rectTransform.rect.size.x, 0.0f));
+            Debug.Log(cachedTextGeneratorForLayout.GetPreferredHeight(_outputText, settings) / pixelsPerUnit);
+            return cachedTextGeneratorForLayout.GetPreferredHeight(_outputText, settings) / pixelsPerUnit;
         }
     }
     #endregion
