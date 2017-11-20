@@ -1,24 +1,24 @@
 fileFormatVersion: 2
-guid: 3468b62a98846f44ba3e1829833f9c72
-timeCreated: 1510975475
+guid: b44177872e1f8444fb650194405465b8
+timeCreated: 1511147577
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    4300000: eyes
-    4300002: face-1
-    4300004: hair-1
-    4300006: top-2
-    4300008: pants-2
-    4300010: top-1
-    4300012: pants-1
-    4300014: shoes-2
-    4300016: hair-2
-    4300018: shoes-1
-    4300020: face-2
-    7400000: Take 001
+    4300000: male_eyes
+    4300002: male_face-1
+    4300004: male_hair-1
+    4300006: male_top-2
+    4300008: male_pants-2
+    4300010: male_top-1
+    4300012: male_pants-1
+    4300014: male_shoes-2
+    4300016: male_hair-2
+    4300018: male_shoes-1
+    4300020: male_face-2
+    7400000: idle1
     9500000: //RootNode
   materials:
     importMaterials: 0

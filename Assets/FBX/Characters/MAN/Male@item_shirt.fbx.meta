@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 0772b9412047c4d43aa542fc09c05053
-timeCreated: 1510975448
+guid: 1cdd10e26d1c7aa4d935e6a68ba2f546
+timeCreated: 1511147590
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
@@ -18,7 +18,7 @@ ModelImporter:
     4300016: male_hair-2
     4300018: male_shoes-1
     4300020: male_face-2
-    7400000: item_boots
+    7400000: item_shirt
     9500000: //RootNode
   materials:
     importMaterials: 0
