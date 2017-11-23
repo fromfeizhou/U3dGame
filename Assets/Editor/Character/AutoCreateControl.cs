@@ -15,82 +15,29 @@ using System.IO;
 */
 public class AutoCreateControl
 {
-    private static string ParentFold = "/Resources/Character/";
-    private static string ParentPath = Application.dataPath + ParentFold;
-
-    [MenuItem("EDOTools/Charactor/2.CreateControlAll")]
-    public static void CreateControlAll()
-    {
-        string[] dirs = Directory.GetDirectories(ParentPath, "*", SearchOption.TopDirectoryOnly);
-
-        foreach (string dir in dirs)
-        {
-            if (dir.EndsWith(".svn"))
-                continue;
-
-            int lastLineIndex = dir.LastIndexOf("/");
-            if (lastLineIndex == -1)
-                continue;
-
-            string foldName = dir.Substring(lastLineIndex + 1);
-
-            try
-            {
-                CreateControl(foldName);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("----create charactor control fail----name=" + foldName + ",msg=" + e.Message);
-            }
-        }
-
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-    }
-
-    [MenuItem("EDOTools/Charactor/2.CreateControlSelect")]
-    public static void CreateControlSelect()
-    {
-        UnityEngine.Object[] objs = Selection.GetFiltered(typeof(DefaultAsset), SelectionMode.TopLevel);
-        foreach (UnityEngine.Object o in objs)
-        {
-            string path = ParentPath + o.name;
-            if (Directory.Exists(path) && Directory.Exists(path + "/models"))
-                CreateControl(o.name);
-        }
-
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-    }
-
     #region 创建animator
-
-    private static string modelPath = "";
-    private static AnimatorStateMachine machine;
-    private static AnimatorController m_ac;
+    //动作模型 父文件夹
+    private static string m_parentPath = "";
+    private static AnimatorStateMachine m_stateMachine;
+    private static AnimatorController m_curAnimCtrl;
     private static Dictionary<string, AnimatorState> m_allState = new Dictionary<string, AnimatorState>();
-    public static AnimatorController CreateControl(string foldName)
+    private static string[] m_states = { "idle1", "item_boots", "item_pants", "item_shirt", "walk" };
+    public static AnimatorController CreateControl(string filePath)
     {
-        string path = string.Format("Assets{0}{1}/animation", ParentFold, foldName);
-
-        if (!Directory.Exists(path))
+        m_parentPath = filePath;
+        string foldPath = filePath + "Control";
+        if (!Directory.Exists(foldPath))
         {
-            Directory.CreateDirectory(path);
+            Directory.CreateDirectory(foldPath);
         }
-
-        AnimatorController ac = AnimatorController.CreateAnimatorControllerAtPath(path + "/a.controller");
+        string ctrlPath = PathManager.CombinePath(foldPath, "animation.controller");
+        AnimatorController ac = AnimatorController.CreateAnimatorControllerAtPath(ctrlPath);
+        m_curAnimCtrl = ac;
         AddParam(ac);
-        m_ac = ac;
-        modelPath = string.Format("Assets{0}{1}/models/", ParentFold, foldName);
 
         var animLayer = ac.layers[0];
-        var stateMachine = animLayer.stateMachine;
-        //machine.entryPosition = new Vector3(100, -400, 0);
-        //machine.anyStatePosition = new Vector3(100, -216, 0);
-        //machine.parentStateMachinePosition = new Vector3(100, -400, 0);
-        machine = stateMachine;
-        CreateAllState(machine);
-
+        m_stateMachine = animLayer.stateMachine;
+        CreateAllState();
         CreateAllRelation();
 
         return ac;
@@ -123,29 +70,14 @@ public class AutoCreateControl
         }
     }
 
+    //关联 state
     public static void CreateAllRelation()
     {
-        AnimatorStateTransition ast = null;
-
-        AddTransition("", "stand", "action", AnimatorConditionMode.Equals, 0);
-        AddTransition("", "move", "action", AnimatorConditionMode.Equals, 1);
-        AddTransition("", "standup", "action", AnimatorConditionMode.Equals, 2);
-        AddTransition("", "atstand", "action", AnimatorConditionMode.Equals, 3);
-        AddTransition("", "flyup", "action", AnimatorConditionMode.Equals, 4);
-        AddTransition("", "flydown", "action", AnimatorConditionMode.Equals, 5);
-        AddTransition("", "lose", "action", AnimatorConditionMode.Equals, 6);
-        AddTransition("", "victory", "action", AnimatorConditionMode.Equals, 7);
-        AddTransition("", "victorybreak", "action", AnimatorConditionMode.Equals, 8);
-        AddTransition("", "damage01", "action", AnimatorConditionMode.Equals, 9);
-        AddTransition("", "attack01", "action", AnimatorConditionMode.Equals, 10);
-        AddTransition("", "attack02", "action", AnimatorConditionMode.Equals, 11);
-        AddTransition("", "attack03", "action", AnimatorConditionMode.Equals, 12);
-        AddTransition("", "attack04", "action", AnimatorConditionMode.Equals, 13);
-        AddTransition("", "attack05", "action", AnimatorConditionMode.Equals, 14);
-        AddTransition("", "attack100", "action", AnimatorConditionMode.Equals, 15);
-        AddTransition("", "attack101", "action", AnimatorConditionMode.Equals, 16);
-        AddTransition("", "attack102", "action", AnimatorConditionMode.Equals, 17);
-
+        AddTransition("", m_states[0], "action", AnimatorConditionMode.Equals, 0);
+        AddTransition(m_states[0], m_states[1], "action", AnimatorConditionMode.Equals, 1);
+        AddTransition(m_states[0], m_states[2], "action", AnimatorConditionMode.Equals, 2);
+        AddTransition(m_states[0], m_states[3], "action", AnimatorConditionMode.Equals, 3);
+        AddTransition(m_states[0], m_states[4], "action", AnimatorConditionMode.Equals, 4);
     }
 
     private static AnimatorStateTransition AddTransition(string fromName, string toName,
@@ -159,7 +91,7 @@ public class AutoCreateControl
         if (m_allState.ContainsKey(toName))
             to = m_allState[toName];
 
-        AnimatorStateTransition transition = (from == null ? machine.AddAnyStateTransition(to) : from.AddTransition(to));
+        AnimatorStateTransition transition = (from == null ? m_stateMachine.AddAnyStateTransition(to) : from.AddTransition(to));
 
         for (int i = 0; i < conditions.Length; )
         {
@@ -176,7 +108,7 @@ public class AutoCreateControl
                 transition.AddCondition(type, arg, name);
             }
         }
-        if (!fromName.StartsWith("stand"))
+        if (!fromName.StartsWith("idle1"))
         {
             transition.canTransitionToSelf = false;
         }
@@ -188,55 +120,45 @@ public class AutoCreateControl
     }
 
     #region 创建状态
-    public static void CreateAllState(AnimatorStateMachine machine)
+    public static void CreateAllState()
     {
         m_allState.Clear();
-        string[] states = { "stand", "move", "standup", "atstand", "flyup", "flydown", "lose", "victory", "victorybreak", "damage01", "attack100", "attack101", "attack102" };
+        
         AnimatorState aState;
         int index = 0;
-        for (int i = 0; i < states.Length; i++)
+        for (int i = 0; i < m_states.Length; i++)
         {
-            string state = states[i];
+            string state = m_states[i];
             if (i == 0)
-                aState = CreateState(machine, state, new Vector3(0, -100, 0));
+                aState = CreateState(state, new Vector3(0, -100, 0));
             else
-                aState = CreateState(machine, state, new Vector3(250, -states.Length * 30 + 60 * index, 0));
+                aState = CreateState(state, new Vector3(250, -m_states.Length * 30 + 60 * index, 0));
             if (aState != null)
                 index++;
         }
-
-        string[] skillState = { "attack01", "attack02", "attack03", "attack04", "attack05" };
-        for (int i = 0; i < skillState.Length; i++)
-        {
-            string state = skillState[i];
-            CreateState(machine, state, new Vector3(250, 60 * i, 0));
-        }
     }
-
-    private static string Modex_ext = ".fbx";
-    public static AnimatorState CreateState(AnimatorStateMachine machine
-        , string name, Vector3 pos)
+    //创建state （判断动作是否有混合动作 分别加载）
+    public static AnimatorState CreateState(string name, Vector3 pos)
     {
-        string fbxPath = modelPath + "action" + Modex_ext;
-        string realAlcName = name;
-
+        string fbxPath = PathManager.CombinePath(m_parentPath, CreatePrefabs.m_ModeName + "@" + name + ".fbx");
         AnimatorState state = null;
         if (IsBlendTree(name))
         {
-            AnimationClip a1c = GetAnimationClip(fbxPath, realAlcName + "_up");
+            AnimationClip a1c = GetAnimationClip(fbxPath);
             if (a1c == null)
             {
-                Debug.LogError("--------动作丢失---------name=" + (fbxPath + "/" + name));
+                Debug.LogError("--------动作丢失---------name=" + (fbxPath));
                 return null;
             }
             BlendTree bt;
-
-            state = m_ac.CreateBlendTreeInController(name, out bt);
+            //创建混合树(名字为name)
+            state = m_curAnimCtrl.CreateBlendTreeInController(name, out bt);
             bt.hideFlags = HideFlags.HideInHierarchy;
             string[] btMotion = { "_up", "_rightup", "_right", "_rightdown" };
             for (int i = 0; i < btMotion.Length; i++)
             {
-                a1c = GetAnimationClip(fbxPath, realAlcName + btMotion[i]);
+                string blendFbxPath = PathManager.CombinePath(m_parentPath, CreatePrefabs.m_ModeName + "@" + name + btMotion[i] + ".fbx");
+                a1c = GetAnimationClip(blendFbxPath);
                 bt.AddChild(a1c);
             }
             bt.useAutomaticThresholds = true;
@@ -246,15 +168,15 @@ public class AutoCreateControl
         }
         else
         {
-            AnimationClip anim = GetAnimationClip(fbxPath, realAlcName);
+            AnimationClip anim = GetAnimationClip(fbxPath);
 
             if (anim == null)
             {
-                Debug.LogError("--------动作丢失---------name=" + (fbxPath + "/" + name));
+                Debug.LogError("--------动作丢失---------name=" + (fbxPath));
                 return null;
             }
 
-            state = machine.AddState(name, pos);
+            state = m_stateMachine.AddState(name, pos);
             state.motion = anim;
         }
         m_allState[name] = state;
@@ -263,30 +185,17 @@ public class AutoCreateControl
 
     private static bool IsBlendTree(string name)
     {
-        string[] treeStates = { "atstand", "attack01", "attack02", "attack03", "attack04", "attack05" };
+        //暂时没有 sample::   treeStates = { "atstand","attack01", "attack02", "attack03", "attack04", "attack05" };
+        string[] treeStates = { };
         if (treeStates.Contains(name))
             return true;
         return false;
     }
 
-    private static AnimationClip GetAnimationClip(string fbxPath, string name)
+    private static AnimationClip GetAnimationClip(string fbxPath)
     {
-        if (name == "victory")
-        {
-            fbxPath = modelPath + name + Modex_ext;
-            AnimationClip a1c = AssetDatabase.LoadAssetAtPath(fbxPath, typeof(AnimationClip)) as AnimationClip;
-            return a1c;
-        }
-
-        UnityEngine.Object[] objs = AssetDatabase.LoadAllAssetsAtPath(fbxPath);
-        foreach (UnityEngine.Object o in objs)
-        {
-            if (o is AnimationClip && o.name == name)
-            {
-                return (o as AnimationClip);
-            }
-        }
-        return null;
+        AnimationClip a1c = AssetDatabase.LoadAssetAtPath(fbxPath, typeof(AnimationClip)) as AnimationClip;
+        return a1c;
     }
 
     #endregion
