@@ -25,7 +25,7 @@ public class AutoCreateControl
     public static AnimatorController CreateControl(string filePath)
     {
         m_parentPath = filePath;
-        string foldPath = filePath + "Control";
+        string foldPath = filePath + "Control/";
         if (!Directory.Exists(foldPath))
         {
             Directory.CreateDirectory(foldPath);

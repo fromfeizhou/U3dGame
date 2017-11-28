@@ -8,12 +8,27 @@ using UnityEditor.Animations;
 class CreatePrefabs
 {
     public static string m_ModeName = "Male";
-
+    public static Dictionary<string, string> m_materialList;
     //创建Prefab  
     [MenuItem("MyTool/Character/Create Prefabs")]
 
     static void CreatePrefabSelect()
     {
+        if (null == m_materialList)
+        {
+            m_materialList = new Dictionary<string, string>();
+            m_materialList.Add("eyes", "male_eyes_blue.mat");
+            m_materialList.Add("face-1", "male_face-1.mat");
+            m_materialList.Add("face-2", "male_face-2.mat");
+            m_materialList.Add("hair-1", "male_hair-1_blond.mat");
+            m_materialList.Add("hair-2", "male_hair-2_blond.mat");
+            m_materialList.Add("pants-1", "male_pants-1_blue.mat");
+            m_materialList.Add("pants-2", "male_pants-2_blue.mat");
+            m_materialList.Add("shoes-1", "male_shoes-1_black.mat");
+            m_materialList.Add("shoes-2", "male_shoes-2_brown.mat");
+            m_materialList.Add("top-1", "male_top-1_blue.mat");
+            m_materialList.Add("top-2", "male_top-2_gray.mat");
+        }
         foreach (Object o in Selection.GetFiltered(typeof(Object), SelectionMode.Assets))
         {
             if (!(o is GameObject)) continue;
@@ -41,26 +56,26 @@ class CreatePrefabs
         //关联材质
         for (int i = 0; i < go.transform.childCount; i++)
         {
-            //Transform tf = go.transform.GetChild(i);
-            //string partName = tf.name;
-            //if (partName.StartsWith("equip") || partName.StartsWith("body"))
-            //{
-            //    string matPath = filePath + string.Format("/materials/{0}.mat", partName);
-            //    SkinnedMeshRenderer sr = tf.GetComponent<SkinnedMeshRenderer>();
-            //    sr.material = AssetDatabase.LoadAssetAtPath(matPath, typeof(UnityEngine.Material)) as UnityEngine.Material;
-            //}
+            Transform tf = go.transform.GetChild(i);
+            SkinnedMeshRenderer sr = tf.GetComponent<SkinnedMeshRenderer>();
+            if (null != sr)
+            {
+                string partName = tf.name;
+                string matPath = PathManager.CombinePath(filePath + "Materials/", m_materialList[partName]);
+                sr.material = AssetDatabase.LoadAssetAtPath(matPath, typeof(UnityEngine.Material)) as UnityEngine.Material;
+            }
         }
         //创建状态机
         AnimatorController ac = AutoCreateControl.CreateControl(filePath);
         go.GetComponent<Animator>().runtimeAnimatorController = ac;
         //GlobalDefine.SetLayer(go, GlobalDefine.Layer_character);
 
-        string foldPath = filePath + "Prefab";
+        string foldPath = filePath + "Prefabs/";
         if (!Directory.Exists(foldPath))
         {
             Directory.CreateDirectory(foldPath);
         }
-        string prefabPath = PathManager.CombinePath(filePath,"model.prefab");
+        string prefabPath = PathManager.CombinePath(foldPath ,"model.prefab");
         PrefabUtility.CreatePrefab(prefabPath, go);
         // GameObject.DestroyImmediate(go);
     }
